@@ -10,7 +10,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
-public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
+public class GoogleMapsApp extends JFrame {
 
     private JTextField streetField;
     private JTextField cityField;
@@ -22,7 +22,7 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
     private JButton submitButton;
     private final String API_KEY = "AIzaSyB7HMRe8WO62nhDERJyJU8JL5oklzXXS78";
 
-    public IN352_Cory_McCombs_Unit8_Assignment() {
+    public GoogleMapsApp() {
         setTitle("Google Maps App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -50,6 +50,7 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
         satelliteButton = new JRadioButton("Satellite View");
         terrainButton = new JRadioButton("Terrain View");
         streetViewButton = new JRadioButton("Street View");
+        satelliteButton.setSelected(true);
 
         ButtonGroup viewGroup = new ButtonGroup();
         viewGroup.add(satelliteButton);
@@ -94,7 +95,7 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
 
         try {
             String fullAddress = String.format("%s, %s, %s, %s", street, city, state, zip);
-            String encodedAddress = URLEncoder.encode(fullAddress, StandardCharsets.UTF_8.name());
+            String encodedAddress = URLEncoder.encode(fullAddress, StandardCharsets.UTF_8);
 
             String geocodingUrl = String.format(
                     "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s",
@@ -107,14 +108,15 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 System.err.println("API Response: " + jsonResponse);
                 return;
+
             }
 
             double lat = parseValue(jsonResponse, "\"lat\"");
             double lng = parseValue(jsonResponse, "\"lng\"");
 
-            System.out.printf("Latitude: %f, Longitude: %f%n", lat, lng);
-
-            openMapView(lat, lng, 20, fullAddress);
+            double[] coordinates = overrideCoordinates(fullAddress, lat, lng);
+            openMapView(coordinates[0], coordinates[1], fullAddress);
+            performReverseGeocoding(coordinates[0], coordinates[1]);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -150,6 +152,8 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
         }
         String valueStr = json.substring(valueStart, valueEnd).trim();
 
+        // This is the core fix for the NumberFormatException.
+        // It removes all characters that are not a digit, a period, or a minus sign.
         String cleanedValueStr = valueStr.replaceAll("[^0-9.-]", "");
 
         if (cleanedValueStr.isEmpty() || !cleanedValueStr.matches("-?\\d+(\\.\\d+)?")) {
@@ -160,23 +164,34 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
         return Double.parseDouble(cleanedValueStr);
     }
 
-    private void openMapView(double lat, double lng, int zoomLevel, String address) {
-        String mapsUrl;
+    private String parseStringValue(String json, String key) {
+        int keyIndex = json.indexOf(key);
+        if (keyIndex == -1) {
+            throw new IllegalArgumentException("Key not found in JSON: " + key);
+        }
+        int valueStart = json.indexOf(":", keyIndex) + 1;
+        int quoteStart = json.indexOf("\"", valueStart);
+        int quoteEnd = json.indexOf("\"", quoteStart + 1);
+        if (quoteStart == -1 || quoteEnd == -1) {
+            return null;
+        }
+        return json.substring(quoteStart + 1, quoteEnd);
+    }
+
+    private void openMapView(double lat, double lng, String address) {
+        String mapsUrl = "";
+        String viewType = "";
 
         if (satelliteButton.isSelected()) {
-            mapsUrl = String.format(
-                    "https://www.google.com/maps/@?api=1&map_action=map&center=%s,%s&zoom=18&basemap=satellite&q=%s",
-                    lat, lng, URLEncoder.encode(address, StandardCharsets.UTF_8));
+            viewType = "k"; // satellite
         } else if (terrainButton.isSelected()) {
-            mapsUrl = String.format(
-                    "https://www.google.com/maps/@?api=1&map_action=map&center=%s,%s&zoom=15&t=p&q=%s", lat,
-                    lng, URLEncoder.encode(address, StandardCharsets.UTF_8));
-        } else { // streetViewButton is selected, default to street view
-            mapsUrl = String.format(
-                    "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=%s,%s&zoom=%d&q=%s", lat, lng,
-                    zoomLevel, URLEncoder.encode(address, StandardCharsets.UTF_8));
+            viewType = "p"; // terrain
+        } else if (streetViewButton.isSelected()) {
+            viewType = "m"; // roadmap
         }
-        System.out.println("Opening map at: " + mapsUrl);
+
+        mapsUrl = String.format("http://maps.google.com/maps?q=%s&t=%s",
+                URLEncoder.encode(address, StandardCharsets.UTF_8), viewType);
 
         try {
             Desktop.getDesktop().browse(new URI(mapsUrl));
@@ -187,9 +202,38 @@ public class IN352_Cory_McCombs_Unit8_Assignment extends JFrame {
         }
     }
 
+    private void performReverseGeocoding(double lat, double lng) {
+        try {
+            String reverseGeocodingUrl = String.format(
+                    "https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&key=%s",
+                    lat, lng, API_KEY);
+
+            String jsonResponse = getApiResponse(reverseGeocodingUrl);
+
+            if (!jsonResponse.contains("\"status\" : \"OK\"")) {
+                System.err.println("Reverse geocoding failed: " + jsonResponse);
+                return;
+            }
+
+            String formattedAddress = parseStringValue(jsonResponse, "\"formatted_address\"");
+            JOptionPane.showMessageDialog(this, "Reverse Geocoded Address: " + formattedAddress, "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error during reverse geocoding.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private double[] overrideCoordinates(String address, double lat, double lng) {
+        // Logic for overriding coordinates can be extended dynamically if needed
+        // Currently, it simply returns the provided lat/lng without hardcoding
+        return new double[] { lat, lng };
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            IN352_Cory_McCombs_Unit8_Assignment app = new IN352_Cory_McCombs_Unit8_Assignment();
+            GoogleMapsApp app = new GoogleMapsApp();
             app.setVisible(true);
         });
     }
