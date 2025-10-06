@@ -121,8 +121,8 @@ public class MovieLensGUI extends JFrame {
         // Action Listener for the Get Top Rated Movies Button
         totalRatingsButton.addActionListener(e -> {
             if (checkConnection()) {
-                String topMovies = movieDB.getRatingsCount();
-                showScrollableMessage("Top Rated Movies", topMovies);
+                String ratingsCount = movieDB.getRatingsCount();
+                JOptionPane.showMessageDialog(this, "The total number of ratings is: " + ratingsCount, "Total Ratings", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 

@@ -107,15 +107,13 @@ public class MovieLensDB {
         
            
         StringBuilder totRatings = new StringBuilder();
-        totRatings.append("Top Rated Movies:\n");
 
         try (Connection conn = getConnection(); // MODIFIED to use the helper method
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                int totalRatings = rs.getInt("TotalRatings");
-                totRatings.append(String.format("%s (The Total number of ratings is:  d%n)\n", totalRatings));
+               totRatings.append(rs.getInt("TotalRatings")).append("\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
