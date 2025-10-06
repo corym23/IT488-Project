@@ -2,8 +2,6 @@ package IN452_Unit1;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * This class creates the user interface for interacting with the MovieLens database.
@@ -17,8 +15,15 @@ public class MovieLensGUI extends JFrame {
     private JButton connectButton;
     private JButton countButton;
     private JButton titlesButton;
+    private JButton totalRatingsButton;
     private JButton topRatedButton;
-    private JButton genresButton;
+    private JButton usersButton;
+    private JButton popGenresButton;
+    private JButton tagsButton;
+    private JButton popTagsButton;
+    private JTextField dbUsername;
+    private JTextField dbPassword;
+    
 
     /**
      * Constructor: Initializes the GUI components.
@@ -29,20 +34,27 @@ public class MovieLensGUI extends JFrame {
         super("MovieLens Database Explorer"); // Set window title
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Use a 5x2 grid layout with spacing
-        setLayout(new GridLayout(5, 2, 10, 10));
+        setLayout(new GridLayout(12, 2, 10, 10));
+
 
         // --- 2. Create GUI Components ---
         connectButton = new JButton("Connect to MovieLens DB");
         countButton = new JButton("Movie Count");
-        titlesButton = new JButton("Get Movie Titles");
+        titlesButton = new JButton("Get Movie Titles (Top 50)");
+        totalRatingsButton = new JButton("Get Total Ratings");
         topRatedButton = new JButton("Get Top Rated Movies");
-        genresButton = new JButton("Get Movie Genres");
-//        usersButton = new JButton("Get Total Users");
-//        popGenresButton = new JButton("Get Popular Genres");
-//        tagsButton = new JButton("Get Total Tags");
-//        popTagsButton = new JButton("Get Popular Tags");
+        usersButton = new JButton("Get Total Users");
+        popGenresButton = new JButton("Get Popular Genres");
+        tagsButton = new JButton("Get Total Tags");
+        popTagsButton = new JButton("Get Popular Tags");
+        dbUsername = new JTextField("IN452_User");
+        dbPassword = new JTextField("P@55W0rd!");
 
         // --- 3. Add Components to the Frame ---
+        add(new JLabel("DB Username:", SwingConstants.CENTER));
+        add(dbUsername);
+        add(new JLabel("DB Password:", SwingConstants.CENTER));
+        add(dbPassword);
         add(new JLabel("Connect:", SwingConstants.CENTER));
         add(connectButton);
         add(new JLabel("Count:", SwingConstants.CENTER));
@@ -50,17 +62,18 @@ public class MovieLensGUI extends JFrame {
         add(new JLabel("Titles:", SwingConstants.CENTER));
         add(titlesButton);
         add(new JLabel("Top Rated:", SwingConstants.CENTER));
-        add(topRatedButton);
+        add(totalRatingsButton);
         add(new JLabel("Genres:", SwingConstants.CENTER));
-        add(genresButton);
-//        add(new JLabel("User Count:", SwingConstants.CENTER));
-//        add(usersButton);
-//        add(new JLabel("Popular Genres:", SwingConstants.CENTER));
-//        add(popGenresButton);
-//        add(new JLabel("Tags Count:", SwingConstants.CENTER));
-//        add(tagsButton);
-//        add(new JLabel("Popular Tags:", SwingConstants.CENTER));
-//        add(popTagsButton);
+        add(topRatedButton);
+        add(new JLabel("User Count:", SwingConstants.CENTER));
+        add(usersButton);
+        add(new JLabel("Popular Genres:", SwingConstants.CENTER));
+        add(popGenresButton);
+        add(new JLabel("Tags Count:", SwingConstants.CENTER));
+        add(tagsButton);
+        add(new JLabel("Popular Tags:", SwingConstants.CENTER));
+        add(popTagsButton);
+
 
         // --- 4. Add Action Listeners for each button ---
         setupActionListeners();
@@ -69,15 +82,17 @@ public class MovieLensGUI extends JFrame {
         pack(); // Adjusts window size to fit all components
         setLocationRelativeTo(null); // Center the window on the screen
         setVisible(true);
+        
     }
 
     /**
      * Helper method to configure all button action listeners.
      */
     private void setupActionListeners() {
+
         // Action Listener for the Connect Button
         connectButton.addActionListener(e -> {
-            movieDB = new MovieLensDB(); // Initialize with default constructor
+            movieDB = new MovieLensDB(dbUsername.getText(), dbPassword.getText()); // Initialize with default constructor
             if (movieDB.testConnection()) {
                 JOptionPane.showMessageDialog(this, "Connection to MovieLens DB successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -98,24 +113,53 @@ public class MovieLensGUI extends JFrame {
         titlesButton.addActionListener(e -> {
             if (checkConnection()) {
                 String titles = movieDB.getMovieTitles();
-                showScrollableMessage("First 100 Movie Titles", titles);
+                showScrollableMessage("Movie Titles", titles);
+                
             }
         });
 
         // Action Listener for the Get Top Rated Movies Button
-        topRatedButton.addActionListener(e -> {
+        totalRatingsButton.addActionListener(e -> {
             if (checkConnection()) {
-                String topMovies = movieDB.getTopRatedMovies();
+                String topMovies = movieDB.getRatingsCount();
                 showScrollableMessage("Top Rated Movies", topMovies);
             }
         });
 
         // Action Listener for the Get Movie Genres Button
-        genresButton.addActionListener(e -> {
+        topRatedButton.addActionListener(e -> {
             if (checkConnection()) {
                 String genres = movieDB.getMovieGenres();
                 showScrollableMessage("Unique Movie Genres", genres);
             }
+        });
+        // Action Listener for the Get Total Users Button
+        usersButton.addActionListener(e -> {
+        	if (checkConnection()) {
+        		String totUsers = movieDB.getTotalUsers();
+        		JOptionPane.showMessageDialog(this, "Total Users: " + totUsers, "Total Users", JOptionPane.INFORMATION_MESSAGE);
+        	}
+        });
+        // Action Listener for the Get Popular Genres Button
+        popGenresButton.addActionListener(e -> {
+        	if (checkConnection()) {
+        		String popGenres = movieDB.getPopularGenres();
+        		showScrollableMessage("Popular Genres",popGenres);
+        	}
+        });
+        // Action Listener for the Get Total Tags Button
+        tagsButton.addActionListener(e -> {
+        	if (checkConnection()) {
+        		String totTags = movieDB.getTotalTags();
+        		JOptionPane.showMessageDialog(this, "Total Tags: " + totTags, "Total Tags", JOptionPane.INFORMATION_MESSAGE);
+        	}
+        });
+        // Action Listener for the Get Popular Tags Button
+        popTagsButton.addActionListener(e -> {
+        	if (checkConnection()) {
+        		String popTags = movieDB.getPopularTags();
+        		showScrollableMessage("Popular Tags", popTags);
+        	}
         });
     }
 
