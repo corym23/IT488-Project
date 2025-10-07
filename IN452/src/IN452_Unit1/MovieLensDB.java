@@ -133,7 +133,7 @@ public class MovieLensDB {
         		+ "from movies m join ratings r \n"
         		+ "on m.movieId = r.movieId\n"
         		+ "GROUP BY m.movies\n"
-        		+ "ORDER BY m.movies desc;";
+        		+ "ORDER BY m.movies desc";
         StringBuilder topRated = new StringBuilder();
 
         try (Connection conn = getConnection(); // MODIFIED to use the helper method
