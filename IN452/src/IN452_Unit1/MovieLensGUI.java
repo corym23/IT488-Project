@@ -129,15 +129,15 @@ public class MovieLensGUI extends JFrame {
         // Action Listener for the Get Movie Genres Button
         topRatedButton.addActionListener(e -> {
             if (checkConnection()) {
-                String genres = movieDB.getMovieGenres();
-                showScrollableMessage("Unique Movie Genres", genres);
+                String title = movieDB.getTopRatedMovies();
+                showScrollableMessage("Top Rated Movies: ", title);
             }
         });
         // Action Listener for the Get Total Users Button
         usersButton.addActionListener(e -> {
         	if (checkConnection()) {
         		String totUsers = movieDB.getTotalUsers();
-        		JOptionPane.showMessageDialog(this, "Total Users: " + totUsers, "Total Users", JOptionPane.INFORMATION_MESSAGE);
+        		JOptionPane.showMessageDialog(this, "Total Users: " + totUsers, "Total number of users", JOptionPane.INFORMATION_MESSAGE);
         	}
         });
         // Action Listener for the Get Popular Genres Button

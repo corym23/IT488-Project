@@ -16,7 +16,7 @@ public class test extends MovieLensDB{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mldb.getMovieGenres();
+	
 	}
 
 }

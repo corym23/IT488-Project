@@ -126,24 +126,28 @@ public class MovieLensDB {
 
     /**
      * Retrieves all unique genre combinations in the database.
-     * @return A string containing each unique genre combination on a new line.
+     * Returns the top 20 highest-rated movies with their average ratings.
      */
-    public String getMovieGenres() {
-        String sql = "SELECT DISTINCT genres FROM movies;";
-        StringBuilder genres = new StringBuilder();
+    public String getTopRatedMovies() {
+        String sql = "SELECT TOP 20 m.movies, AVG(r.ratings) topRating \n"
+        		+ "from movies m join ratings r \n"
+        		+ "on m.movieId = r.movieId\n"
+        		+ "GROUP BY m.movies\n"
+        		+ "ORDER BY m.movies desc;";
+        StringBuilder topRated = new StringBuilder();
 
         try (Connection conn = getConnection(); // MODIFIED to use the helper method
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                genres.append(rs.getString("genres")).append("\n");
+                topRated.append(rs.getString("topRated")).append("\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return "Error: " + e.getMessage();
         }
-        return genres.toString();
+        return topRated.toString();
     }
     /**
      * Retrieves total distinct user in the database.
