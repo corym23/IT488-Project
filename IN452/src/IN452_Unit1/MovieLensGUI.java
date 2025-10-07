@@ -47,7 +47,7 @@ public class MovieLensGUI extends JFrame {
         popGenresButton = new JButton("Get Popular Genres");
         tagsButton = new JButton("Get Total Tags");
         popTagsButton = new JButton("Get Popular Tags");
-        dbUsername = new JTextField("IN452_Use");
+        dbUsername = new JTextField("IN452_User");
         dbPassword = new JTextField("P@55W0rd!");
 
         // --- 3. Add Components to the Frame ---
