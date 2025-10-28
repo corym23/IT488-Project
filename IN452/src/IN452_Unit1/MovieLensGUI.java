@@ -48,8 +48,8 @@ public class MovieLensGUI extends JFrame {
         popGenresButton = new JButton("Get Popular Genres");
         tagsButton = new JButton("Get Total Tags");
         popTagsButton = new JButton("Get Popular Tags");
-        dbUsername = new JTextField("");
-        dbPassword = new JTextField("");
+        dbUsername = new JTextField("IN452_User");
+        dbPassword = new JTextField("P@55W0rd!");
         dbServer = new JTextField("");
         
 
@@ -145,7 +145,7 @@ public class MovieLensGUI extends JFrame {
         usersButton.addActionListener(e -> {
         	if (checkConnection()) {
         		String totUsers = movieDB.getTotalUsers();
-        		JOptionPane.showMessageDialog(this, "Total number of users is: " + totUsers, "User Count", JOptionPane.INFORMATION_MESSAGE);
+        		JOptionPane.showMessageDialog(this,"Total number of users is: " + totUsers, "User Count", JOptionPane.INFORMATION_MESSAGE);
         	}
         });
         // Action Listener for the Get Popular Genres Button
