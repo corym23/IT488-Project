@@ -18,9 +18,7 @@ package com.pug.in452.IN452_MovieLens;
  *   interrupting sleeping threads so they terminate promptly.
  * - setSimulationSpeed(int) updates the delay used by the threads (in ms). It
  *   interrupts threads so they pick up the new value immediately.
- *
- * Note: The class prints status messages to System.out/System.err. A GUI may
- * redirect System.out to display these messages in a text component.
+
  */
 public class MovieLensSimulator {
 

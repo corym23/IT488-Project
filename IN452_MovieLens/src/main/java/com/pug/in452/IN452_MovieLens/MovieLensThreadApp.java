@@ -1,6 +1,7 @@
 package com.pug.in452.IN452_MovieLens;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -17,10 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.BoxLayout;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
+ * Unit 6 Assignment: MovieLensThreadApp
  * Simple Swing application to control MovieLensSimulator and display output.
  */
 public class MovieLensThreadApp extends JFrame {
@@ -32,7 +36,7 @@ public class MovieLensThreadApp extends JFrame {
 
     private final JTextArea logArea = new JTextArea();
     private final JButton connectButton = new JButton("Connect to DB");
-    private final JButton demoConnectButton = new JButton("Connect (Demo)");
+    //private final JButton demoConnectButton = new JButton("Connect (Demo)");
     private final JButton startButton = new JButton("Start Simulation");
     private final JButton stopButton = new JButton("Stop Simulation");
     private final JSlider speedSlider = new JSlider(100, 3000, 1000);
@@ -48,68 +52,90 @@ public class MovieLensThreadApp extends JFrame {
         JScrollPane scroll = new JScrollPane(logArea);
         add(scroll, BorderLayout.CENTER);
 
-        // Control panel
-        JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        controls.add(connectButton);
-        controls.add(demoConnectButton);
-        controls.add(startButton);
-        controls.add(stopButton);
-        // Configure labeled slider for simulation speed (milliseconds)
-        // Create a label table so users see numeric values on the slider.
-        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(100, new JLabel("100 ms"));
-        labelTable.put(500, new JLabel("500 ms"));
-        labelTable.put(1000, new JLabel("1000 ms"));
-        labelTable.put(2000, new JLabel("2000 ms"));
-        labelTable.put(3000, new JLabel("3000 ms"));
-        speedSlider.setLabelTable(labelTable);
-        controls.add(speedSlider);
-        add(controls, BorderLayout.NORTH);
+        // Control panels: top buttons and slider below so labels are not clipped.
+        JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topButtons.add(connectButton);
+        //topButtons.add(demoConnectButton);
+        topButtons.add(startButton);
+        topButtons.add(stopButton);
+        topButtons.setBorder(new EmptyBorder(0, 0, 0, 0));
 
-        // Initial button states
-        startButton.setEnabled(false);
-        stopButton.setEnabled(false);
+        // Put buttons in a container and the slider in its own panel to preserve vertical space for labels
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
 
-        // Redirect System.out to the text area
-        redirectSystemOut();
+        JLabel speedLabel = new JLabel("Simulation Speed (ms):");
+        speedLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT); 
+        sliderPanel.add(speedLabel);
 
-        // Action handlers
-        connectButton.addActionListener(e -> onConnect());
-        demoConnectButton.addActionListener(e -> onDemoConnect());
-        startButton.addActionListener(e -> onStart());
-        stopButton.addActionListener(e -> onStop());
+         // Configure labeled slider for simulation speed (milliseconds)
+         // Create a label table so users see numeric values on the slider.
+         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+         labelTable.put(100, new JLabel("100")); 
+         labelTable.put(500, new JLabel("500"));
+         labelTable.put(1000, new JLabel("1000"));
+         labelTable.put(2000, new JLabel("2000"));
+         labelTable.put(3000, new JLabel("3000"));
+         speedSlider.setLabelTable(labelTable);
+         speedSlider.setPaintLabels(true);
+         speedSlider.setPaintTicks(true);
+         speedSlider.setPreferredSize(new Dimension(500,100)); 
+         speedSlider.setMaximumSize(new Dimension(500,100));
+         speedSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
+         sliderPanel.add(speedSlider);
 
-        speedSlider.setMajorTickSpacing(500);
-        speedSlider.setMinorTickSpacing(100);
-        speedSlider.setPaintTicks(true);
-        speedSlider.setPaintLabels(true);
+         // Container for controls: buttons at top, slider panel below
+         JPanel controls = new JPanel(new BorderLayout());
+         controls.add(topButtons, BorderLayout.NORTH);
+         controls.add(sliderPanel, BorderLayout.CENTER); 
+         add(controls, BorderLayout.NORTH);
 
-        speedSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (!speedSlider.getValueIsAdjusting() && simulator != null) {
-                    int value = speedSlider.getValue();
-                    try {
-                        simulator.setSimulationSpeed(value);
-                    } catch (Exception ex) {
-                        System.err.println("Failed to set speed: " + ex.getMessage());
-                    }
-                }
-            }
-        });
-    }
+         // Initial button states
+         startButton.setEnabled(false);
+         stopButton.setEnabled(false);
 
-    private void onDemoConnect() {
-        try {
-            controller = new DemoMovieLensDB();
-            simulator = new MovieLensSimulator(controller);
-            startButton.setEnabled(true);
-            System.out.println("Connected to demo database successfully.");
-        } catch (Exception ex) {
-            System.err.println("Demo connection failed: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
+         // Redirect System.out to the text area
+         redirectSystemOut();
+
+         // Action handlers
+         connectButton.addActionListener(e -> onConnect());
+         //demoConnectButton.addActionListener(e -> onDemoConnect());
+         startButton.addActionListener(e -> onStart());
+         stopButton.addActionListener(e -> onStop());
+
+         //100 as major tick spacing so the numeric labels align under major ticks (100,500,1000,2000,3000)
+         speedSlider.setMajorTickSpacing(100);
+         speedSlider.setMinorTickSpacing(100);
+         speedSlider.setPaintTicks(true);
+         speedSlider.setPaintLabels(true);
+
+         speedSlider.addChangeListener(new ChangeListener() {
+             @Override
+             public void stateChanged(ChangeEvent e) {
+                 if (!speedSlider.getValueIsAdjusting() && simulator != null) {
+                     int value = speedSlider.getValue();
+                     try {
+                         simulator.setSimulationSpeed(value);
+                     } catch (Exception ex) {
+                         System.err.println("Failed to set speed: " + ex.getMessage());
+                     }
+                 }
+             }
+         });
+     }
+
+//    private void onDemoConnect() {
+//        try {
+//            controller = new DemoMovieLensDB();
+//            simulator = new MovieLensSimulator(controller);
+//            startButton.setEnabled(true);
+//            System.out.println("Connected to demo database successfully.");
+//        } catch (Exception ex) {
+//            System.err.println("Demo connection failed: " + ex.getMessage());
+//            ex.printStackTrace();
+//        }
+//    }
 
     private void onConnect() {
         // Hard-coded connection string (as requested). Adjust if your DB differs.
@@ -175,7 +201,6 @@ public class MovieLensThreadApp extends JFrame {
             try {
                 MovieLensThreadApp app = new MovieLensThreadApp();
                 app.setVisible(true);
-                // No auto-start: the user must click Connect (Demo) and Start Simulation
             } catch (Exception e) {
                 e.printStackTrace();
             }

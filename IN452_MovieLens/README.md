@@ -9,26 +9,48 @@ This README documents how to build, clean and run the project, plus notes about 
 ## Important files (new/modified)
 
 - `src/main/java/com/pug/in452/IN452_MovieLens/MovieLensSimulator.java`
+
   - Multi-threaded simulator (movie thread, rating thread, monitor thread).
   - Public API: `startSimulation()`, `stopSimulation()`, `setSimulationSpeed(int)`.
   - Prints status to `System.out` (GUI redirects output to the text area).
 
 - `src/main/java/com/pug/in452/IN452_MovieLens/DemoMovieLensDB.java`
+
   - Lightweight in-memory demo implementation of `MovieLensDB` that returns canned responses.
   - Intended for development and UI demonstration when a real database is not available.
 
 - `src/main/java/com/pug/in452/IN452_MovieLens/MovieLensThreadApp.java`
+
   - Swing GUI that provides controls to connect to a DB (or demo), start/stop the simulator and adjust speed via a labeled slider.
   - The GUI redirects `System.out`/`System.err` into the text log area.
 
 - `src/main/java/com/pug/in452/IN452_MovieLens/HeadlessDemoLauncher.java` (deprecated stub)
+
   - Deprecated stub left in the tree for reference; no main method present.
 
 - `src/main/java/com/pug/in452/IN452_MovieLens/MovieLensDB.java` (minor diagnostic change)
+
   - Attempts to load the SQL Server JDBC driver class to provide clearer diagnostics if the driver is missing.
 
 - `pom.xml`
   - The Microsoft SQL Server JDBC dependency was changed from `test` scope to normal scope so the driver is available at runtime when launching the GUI via Maven.
+
+---
+
+## Quick build after changes
+
+- Save your files.
+- Build (runs tests):
+
+      mvn clean package
+
+- Build but skip tests (faster):
+
+      mvn clean package -DskipTests
+
+- Run only tests:
+
+      mvn test
 
 ---
 
@@ -39,21 +61,21 @@ This README documents how to build, clean and run the project, plus notes about 
 
 If you do not have JDK installed, install (example using Homebrew):
 
-  brew install openjdk@17
+brew install openjdk@17
 
 Then set `JAVA_HOME` in your shell (temporary):
 
-  export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 
 To persist it in zsh (~/.zshrc):
 
-  echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' >> ~/.zshrc
-  source ~/.zshrc
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' >> ~/.zshrc
+source ~/.zshrc
 
 Verify java and mvn:
 
-  java -version
-  mvn -v
+java -version
+mvn -v
 
 ---
 
@@ -61,9 +83,10 @@ Verify java and mvn:
 
 From project root:
 
-  mvn -DskipTests package
+cd /Users/corymccombs/git/PUG/IN452_MovieLens && mvn -DskipTests package -q
 
 This will:
+
 - Compile the code into `target/classes`.
 - Download dependencies (including the Microsoft SQL Server JDBC driver declared in `pom.xml`).
 
@@ -73,9 +96,10 @@ This will:
 
 This runs the GUI with dependencies automatically placed on the classpath:
 
-  mvn -DskipTests exec:java -Dexec.mainClass="com.pug.in452.IN452_MovieLens.MovieLensThreadApp" -Dexec.cleanupDaemonThreads=false
+mvn -DskipTests exec:java -Dexec.mainClass="com.pug.in452.IN452_MovieLens.MovieLensThreadApp" -Dexec.cleanupDaemonThreads=false
 
 Notes:
+
 - Click `Connect (Demo)` to use the demo database and enable the `Start Simulation` button.
 - Click `Start Simulation` to begin the threads and watch output in the text area.
 - Adjust the speed slider (labels show ms values) and release to apply the new speed.
@@ -96,13 +120,13 @@ Notes:
 
 If you prefer to explicitly reference the SQL Server driver jar:
 
-   java -cp target/classes:/path/to/mssql-jdbc-<version>.jar com.pug.in452.IN452_MovieLens.MovieLensThreadApp
+java -cp target/classes:/path/to/mssql-jdbc-<version>.jar com.pug.in452.IN452_MovieLens.MovieLensThreadApp
 
 ---
 
 ## Clean
 
-  mvn clean
+mvn clean
 
 ---
 
@@ -127,6 +151,7 @@ The code also attempts to load the driver class explicitly and prints a diagnost
 ---
 
 If you want, I can:
+
 - Add a Maven `exec` plugin configuration to `pom.xml` to simplify running.
 - Create a shaded (fat) JAR for a single-file distribution.
 - Remove the deprecated headless stub file entirely.
@@ -136,14 +161,18 @@ If you want, I can:
 ## IN452_MovieLens — Test JVM agent handling
 
 What I changed
+
 - The build now copies the byte-buddy agent into target (maven-dependency-plugin) and sets surefire to preload it. This avoids Mockito/Byte‑Buddy dynamically attaching an agent at test runtime.
 - The byte-buddy agent version is controlled via the bytebuddy.version property in pom.xml.
 
 How to run tests
+
 - mvn test
 
 If you need to change the agent version
+
 - Edit the bytebuddy.version property in pom.xml. The build will copy that agent JAR into target and surefire will use it.
 
 Notes
+
 - Tests should run without the Mockito self-attach warning after this change. A JVM bootstrap classpath sharing warning may still appear; it is unrelated to the agent.
