@@ -36,7 +36,7 @@ public class MovieLensThreadApp extends JFrame {
 
     private final JTextArea logArea = new JTextArea();
     private final JButton connectButton = new JButton("Connect to DB");
-    //private final JButton demoConnectButton = new JButton("Connect (Demo)");
+    private final JButton demoConnectButton = new JButton("Connect (Demo)");
     private final JButton startButton = new JButton("Start Simulation");
     private final JButton stopButton = new JButton("Stop Simulation");
     private final JSlider speedSlider = new JSlider(100, 3000, 1000);
@@ -55,7 +55,7 @@ public class MovieLensThreadApp extends JFrame {
         // Control panels: top buttons and slider below so labels are not clipped.
         JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topButtons.add(connectButton);
-        //topButtons.add(demoConnectButton);
+        topButtons.add(demoConnectButton);
         topButtons.add(startButton);
         topButtons.add(stopButton);
         topButtons.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -100,7 +100,7 @@ public class MovieLensThreadApp extends JFrame {
 
          // Action handlers
          connectButton.addActionListener(e -> onConnect());
-         //demoConnectButton.addActionListener(e -> onDemoConnect());
+         demoConnectButton.addActionListener(e -> onDemoConnect());
          startButton.addActionListener(e -> onStart());
          stopButton.addActionListener(e -> onStop());
 
@@ -125,17 +125,17 @@ public class MovieLensThreadApp extends JFrame {
          });
      }
 
-//    private void onDemoConnect() {
-//        try {
-//            controller = new DemoMovieLensDB();
-//            simulator = new MovieLensSimulator(controller);
-//            startButton.setEnabled(true);
-//            System.out.println("Connected to demo database successfully.");
-//        } catch (Exception ex) {
-//            System.err.println("Demo connection failed: " + ex.getMessage());
-//            ex.printStackTrace();
-//        }
-//    }
+    private void onDemoConnect() {
+        try {
+            controller = new DemoMovieLensDB();
+            simulator = new MovieLensSimulator(controller);
+            startButton.setEnabled(true);
+            System.out.println("Connected to demo database successfully.");
+        } catch (Exception ex) {
+            System.err.println("Demo connection failed: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
 
     private void onConnect() {
         // Hard-coded connection string (as requested). Adjust if your DB differs.
