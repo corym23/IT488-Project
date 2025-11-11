@@ -5,22 +5,32 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class to interact with a MovieLens database.
  * Assumes a database schema with 'movies' and 'ratings' tables.
+ *
+ * Converted to a singleton to centralize access and enable a single shared
+ * database adapter instance across the application. Also adds typed access
+ * methods that return domain objects used by the adapter.
  */
 public class MovieLensDB {
+
+    // Singleton instance
+    private static MovieLensDB instance = null;
 
     // Private field to hold the database connection string.
     private final String connectionString;
     private Connection testConnection = null;
 
-    /**
-     * Constructor that takes server information, username, and password as Strings.
-     * Initializes the database with a connection string for a local SQL Server.
-     */
-    public MovieLensDB(String dbServer, String dbUsername, String dbPassword) {
+    // Package-private constructors allow existing code in the same package to
+    // instantiate for demo or legacy usage while encouraging use of getInstance().
+    MovieLensDB(String dbServer, String dbUsername, String dbPassword) {
         this.connectionString = "jdbc:sqlserver://" + dbServer + ";databaseName=IN452;user=" + dbUsername + ";password=" + dbPassword + ";encrypt=false;";
      }
 
@@ -28,13 +38,43 @@ public class MovieLensDB {
      * Constructor that takes a custom connection string.
      * @param pConnectionString The full JDBC connection string.
      */
-    public MovieLensDB(String pConnectionString) {
+    MovieLensDB(String pConnectionString) {
         this.connectionString = pConnectionString;
     }
     
-    public MovieLensDB(Connection testConnection) {
+    MovieLensDB(Connection testConnection) {
         this.connectionString = null;
         this.testConnection = testConnection;
+    }
+
+    /**
+     * Thread-safe singleton accessor using a full JDBC connection string.
+     */
+    public static synchronized MovieLensDB getInstance(String connectionString) {
+        if (instance == null) {
+            instance = new MovieLensDB(connectionString);
+        }
+        return instance;
+    }
+
+    /**
+     * Thread-safe singleton accessor using server/username/password components.
+     */
+    public static synchronized MovieLensDB getInstance(String dbServer, String dbUsername, String dbPassword) {
+        if (instance == null) {
+            instance = new MovieLensDB(dbServer, dbUsername, dbPassword);
+        }
+        return instance;
+    }
+
+    /**
+     * Thread-safe singleton accessor for tests that inject a Connection.
+     */
+    public static synchronized MovieLensDB getInstance(Connection testConnection) {
+        if (instance == null) {
+            instance = new MovieLensDB(testConnection);
+        }
+        return instance;
     }
 
     /**
@@ -72,8 +112,7 @@ public class MovieLensDB {
             System.err.println("Connection failed: " + e.getMessage());
             return false;
         }
-     
-    }
+     }
 
     /**
      * Retrieves the total number of movies in the database.
@@ -81,7 +120,7 @@ public class MovieLensDB {
      */
     public String getMovieCount() {
         String sql = "SELECT COUNT(*) FROM movies;";
-        try (Connection conn = getConnection(); // MODIFIED to use the helper method
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -125,7 +164,7 @@ public class MovieLensDB {
     public String getRatingsCount() {
         String sql = "select Count(rating) TotalRatings from ratings"; 
 
-        try (Connection conn = getConnection(); // MODIFIED to use the helper method
+        try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -137,7 +176,6 @@ public class MovieLensDB {
                return "Error: " + e.getMessage();
            }
            return "0";
-  
     }
 
     /**
@@ -146,17 +184,16 @@ public class MovieLensDB {
      */
     public String getTopRatedMovies() {
         String sql = "select TOP 20 m.title, avg(r.rating) as topRated\n"
-        		+ "from movies m\n"
-        		+ "join ratings r\n"
-        		+ "on m.movieId = r.movieId\n"
-        		+ "Group by m.title\n"
-        		+ "HAVING avg(r.rating) >= 4\n"
-        		+ "order by topRated Desc";
+                + "from movies m\n"
+                + "join ratings r\n"
+                + "on m.movieId = r.movieId\n"
+                + "Group by m.title\n"
+                + "HAVING avg(r.rating) >= 4\n"
+                + "order by topRated Desc";
         StringBuilder topRated = new StringBuilder();
         topRated.append("Top Rated Movies (Top 20):\n");
         
-    
-        try (Connection conn = getConnection(); // MODIFIED to use the helper method
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -174,8 +211,8 @@ public class MovieLensDB {
      * Returns the count of unique users in the ratings table.
      */
     public String getTotalUsers() {
-    	String sql = "select count(distinct userid) as totalUsers from ratings;";
-    	    	try (Connection conn = getConnection(); // MODIFIED to use the helper method
+        String sql = "select count(distinct userid) as totalUsers from ratings;";
+        try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -193,37 +230,36 @@ public class MovieLensDB {
      * @return the top 10 most common genres with their counts.
      */
     public String getPopularGenres() {
-    	String sql = "select TOP 10 m.genres, count(r.rating) as popGenres\n"
-    			+ "from movies m\n"
-    			+ "join ratings r\n"
-    			+ "on m.movieId = r.movieId \n"
-    			+ "where r.rating >= 5\n"
-    			+ "group by m.genres\n"
-    			+ "order by popGenres desc;";
-    	StringBuilder popGenres = new StringBuilder();
-    	popGenres.append("Popular Genres (Top 10):\n");
-    	
-   	
-    	try (Connection conn = getConnection(); // MODIFIED to use the helper method
-    			Statement stmt = conn.createStatement();
-    			ResultSet rs = stmt.executeQuery(sql)) {
-    		
-    		while (rs.next()) {
-    			popGenres.append(rs.getString("genres")).append(" - ").append(rs.getInt("popGenres")).append("\n");
-    		}
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    		return "Error: " + e.getMessage();
-    	}
-    	return popGenres.toString();
+        String sql = "select TOP 10 m.genres, count(r.rating) as popGenres\n"
+                + "from movies m\n"
+                + "join ratings r\n"
+                + "on m.movieId = r.movieId \n"
+                + "where r.rating >= 5\n"
+                + "group by m.genres\n"
+                + "order by popGenres desc;";
+        StringBuilder popGenres = new StringBuilder();
+        popGenres.append("Popular Genres (Top 10):\n");
+        
+        try (Connection conn = getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                popGenres.append(rs.getString("genres")).append(" - ").append(rs.getInt("popGenres")).append("\n");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+        return popGenres.toString();
     }
     /**
      * Retrieves Total number of tags in the database.
      * @return the total number of tags in the database.
      */
     public String getTotalTags() {
-    	String sql = "select Count(tag)  totaltags from tags;";
-    	try (Connection conn = getConnection(); // MODIFIED to use the helper method
+        String sql = "select Count(tag)  totaltags from tags;";
+        try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -241,26 +277,133 @@ public class MovieLensDB {
      * @return the top 15 most frequently used tags with their counts.
      */
     public String getPopularTags() {
-    	String sql = "select TOP 15 tag popTags, count(tag) tagCount\n"
-    			+ "from tags \n"
-    			+ "Group by tag\n"
-    			+ "order by tagCount desc\n;";
-    	StringBuilder popTags = new StringBuilder();
-    	popTags.append("Popular Tags (Top 15):\n");
-    	
+        String sql = "select TOP 15 tag popTags, count(tag) tagCount\n"
+                + "from tags \n"
+                + "Group by tag\n"
+                + "order by tagCount desc\n;";
+        StringBuilder popTags = new StringBuilder();
+        popTags.append("Popular Tags (Top 15):\n");
+        
 
-    	
-    	try (Connection conn = getConnection(); // MODIFIED to use the helper method
-    			Statement stmt = conn.createStatement();
-    			ResultSet rs = stmt.executeQuery(sql)) {
-    		
-    		while (rs.next()) {
-    			popTags.append(rs.getString("popTags")).append(" - ").append(rs.getInt("tagCount")).append("\n");
-    		}
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    		return "Error: " + e.getMessage();
-    	}
-    	return popTags.toString();
+        
+        try (Connection conn = getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                popTags.append(rs.getString("popTags")).append(" - ").append(rs.getInt("tagCount")).append("\n");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+        return popTags.toString();
+    }
+
+    // Typed methods used by adapter
+
+    public int fetchMovieCount() {
+        String sql = "SELECT COUNT(*) FROM movies";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public String[] fetchMovieTitles(int limit) {
+        if (limit <= 0) return new String[0];
+        String sql = "SELECT TOP " + limit + " title FROM movies ORDER BY movieId ASC";
+        List<String> out = new ArrayList<>();
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) out.add(rs.getString("title"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return out.toArray(new String[0]);
+    }
+
+    public int fetchRatingsCount() {
+        String sql = "SELECT COUNT(rating) FROM ratings";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public MovieRating[] fetchTopRatedMovies(int limit) {
+        if (limit <= 0) return new MovieRating[0];
+        String sql = "select TOP " + limit + " m.title, avg(r.rating) as avgRating from movies m join ratings r on m.movieId = r.movieId Group by m.title order by avgRating desc";
+        List<MovieRating> out = new ArrayList<>();
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                out.add(new MovieRating(rs.getString("title"), rs.getDouble("avgRating")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return out.toArray(new MovieRating[0]);
+    }
+
+    public int fetchUserCount() {
+        String sql = "select count(distinct userid) from ratings";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public GenreCount[] fetchPopularGenres(int limit) {
+        if (limit <= 0) return new GenreCount[0];
+        String sql = "select TOP " + limit + " m.genres, count(r.rating) as cnt from movies m join ratings r on m.movieId = r.movieId where r.rating >= 5 group by m.genres order by cnt desc";
+        List<GenreCount> out = new ArrayList<>();
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String genres = rs.getString(1);
+                int cnt = rs.getInt(2);
+                // movies.genres can be pipe-separated; split and count each genre separately
+                if (genres != null && genres.contains("|")) {
+                    String[] parts = genres.split("\\|");
+                    for (String p : parts) {
+                        out.add(new GenreCount(p.trim(), cnt));
+                    }
+                } else {
+                    out.add(new GenreCount(genres, cnt));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (out.size() > limit) return out.subList(0, limit).toArray(new GenreCount[0]);
+        return out.toArray(new GenreCount[0]);
+    }
+
+    public int fetchTagsCount() {
+        String sql = "select count(tag) from tags";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public TagCount[] fetchPopularTags(int limit) {
+        if (limit <= 0) return new TagCount[0];
+        String sql = "select TOP " + limit + " tag, count(tag) as cnt from tags group by tag order by cnt desc";
+        List<TagCount> out = new ArrayList<>();
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                out.add(new TagCount(rs.getString(1), rs.getInt(2)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return out.toArray(new TagCount[0]);
     }
 }

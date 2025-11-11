@@ -16,6 +16,8 @@
     <maven.compiler.release>17</maven.compiler.release>
     <!-- Byte Buddy agent version property to avoid hardcoding -->
     <bytebuddy.version>1.17.6</bytebuddy.version>
+    <!-- Default JDBC URL used by exec:java; can be overridden with -Djdbc.url=... -->
+    <jdbc.url>jdbc:sqlserver://localhost;databaseName=IN452;user=IN452_User;password=P@55W0rd!;encrypt=false;</jdbc.url>
   </properties>
 
   <dependencyManagement>
@@ -173,10 +175,19 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
-          <mainClass>com.pug.in452.IN452_MovieLens.MovieLensThreadApp</mainClass>
+          <!-- Default to running the CLI MovieRecommendationSystem. The first argument will be the JDBC URL.
+               You can override the URL with -Djdbc.url="your-jdbc-url" or pass a different first argument to exec:java. -->
+          <mainClass>com.pug.in452.IN452_MovieLens.MovieRecommendationSystem</mainClass>
           <cleanupDaemonThreads>false</cleanupDaemonThreads>
+          <arguments>
+            <!-- Use the jdbc.url property by default so users don't need to quote it on the command line. -->
+            <argument>${jdbc.url}</argument>
+            <!-- default userId and number of recommendations (can be overridden by passing args to exec:java) -->
+            <argument>1</argument>
+            <argument>5</argument>
+          </arguments>
         </configuration>
-      </plugin>
+         </plugin>
     </plugins>
   </build>
 </project>

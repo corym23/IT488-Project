@@ -37,6 +37,81 @@ This README documents how to build, clean and run the project, plus notes about 
 
 ---
 
+## MovieLensClient (CLI) — live database only
+
+The MovieLensClient is a small command-line client that queries the live MovieLens database via the MovieLensAdapter and prints four sections to standard output:
+
+- Movie Count
+- Top N rated movies (by average rating)
+- Popular genres (by counts)
+- Popular tags (by counts)
+
+Important details:
+- The current implementation requires a live SQL Server database accessible via JDBC. There is no fallback canned data in this build.
+- Default JDBC URL (used when you do not supply a JDBC URL on the command line):
+
+  jdbc:sqlserver://localhost;databaseName=IN452;user=IN452_User;password=P@55W0rd!;encrypt=false;
+
+- You can override the JDBC URL by passing it as the first program argument to the client (either via Maven exec or java -cp).
+
+Example output format:
+
+Movie Count: 9742
+
+Top 5 Movies:
+12 Angry Men (1997) - 5.0
+...
+
+Popular Genres:
+Drama - 4361
+...
+
+Popular Tags:
+In Netflix queue - 131
+...
+
+### How to run (recommended: Maven exec)
+
+This ensures dependencies (including the MS SQL JDBC driver) are on the runtime classpath.
+
+From project root:
+
+mvn -DskipTests -Dexec.mainClass=com.pug.in452.IN452_MovieLens.MovieLensClient \
+    -Dexec.args="<your-jdbc-url>" exec:java
+
+If you omit -Dexec.args the client will use the default JDBC URL declared in the source.
+
+### How to run (alternate: java -cp)
+
+1. Build the project
+
+   mvn -DskipTests package
+
+2. Build a classpath file (Maven helper)
+
+   mvn dependency:build-classpath -Dmdep.outputFile=cp.txt
+
+3. Run the client with the generated classpath
+
+   java -cp target/classes:$(cat cp.txt) com.pug.in452.IN452_MovieLens.MovieLensClient "<your-jdbc-url>"
+
+Note: if you prefer to reference the JDBC driver jar explicitly, append it to the classpath.
+
+---
+
+## MovieRating (domain object)
+
+MovieRating is a simple immutable POJO used by the adapter and the client to represent a movie and its average rating. Its API:
+
+- MovieRating(String title, double rating)
+- String getTitle()
+- double getRating()
+- String toString()  // returns "<title> - <rating>"
+
+This class is declared at `src/main/java/com/pug/in452/IN452_MovieLens/MovieRating.java`.
+
+---
+
 ## Quick build after changes
 
 - Save your files.
@@ -79,100 +154,14 @@ mvn -v
 
 ---
 
-## Build (recommended: Maven)
-
-From project root:
-
-cd /Users/corymccombs/git/PUG/IN452_MovieLens && mvn -DskipTests package -q
-
-This will:
-
-- Compile the code into `target/classes`.
-- Download dependencies (including the Microsoft SQL Server JDBC driver declared in `pom.xml`).
-
----
-
-## Run (GUI) using Maven exec (recommended)
-
-This runs the GUI with dependencies automatically placed on the classpath:
-
-mvn -DskipTests exec:java -Dexec.mainClass="com.pug.in452.IN452_MovieLens.MovieLensThreadApp" -Dexec.cleanupDaemonThreads=false
-
-Notes:
-
-- Click `Connect (Demo)` to use the demo database and enable the `Start Simulation` button.
-- Click `Start Simulation` to begin the threads and watch output in the text area.
-- Adjust the speed slider (labels show ms values) and release to apply the new speed.
-- To connect to a real SQL Server instance, use `Connect to DB` and update the connection string or credentials in the GUI code if necessary.
-
----
-
-## Run (GUI) using java -cp (alternate)
-
-1. Build: `mvn -DskipTests package`
-2. Create a runtime classpath with dependencies (example using Maven plugin):
-
-   mvn dependency:build-classpath -Dmdep.outputFile=cp.txt
-
-3. Run with the generated classpath:
-
-   java -cp target/classes:$(cat cp.txt) com.pug.in452.IN452_MovieLens.MovieLensThreadApp
-
-If you prefer to explicitly reference the SQL Server driver jar:
-
-java -cp target/classes:/path/to/mssql-jdbc-<version>.jar com.pug.in452.IN452_MovieLens.MovieLensThreadApp
-
----
-
-## Clean
-
-mvn clean
-
----
-
 ## Troubleshooting — "No suitable driver found"
 
-If you click `Connect to DB` and see `Connection failed: No suitable driver found for jdbc:sqlserver://...`, then the JDBC driver is not available at runtime. Solutions:
+If you see `Connection failed: No suitable driver found for jdbc:sqlserver://...`, then the JDBC driver is not available at runtime. Solutions:
 
 - Use the Maven exec approach above (it places the driver on the classpath).
 - If using `java -cp`, include the SQL Server JDBC jar in the classpath.
 - Ensure the driver JAR version matches your Java runtime (the declared driver in `pom.xml` is `mssql-jdbc:12.6.1.jre11`).
 
-The code also attempts to load the driver class explicitly and prints a diagnostic if it is not found.
+The code attempts to load the driver class explicitly and prints a diagnostic if it is not found.
 
 ---
-
-## Developer notes
-
-- The demo DB (`DemoMovieLensDB`) provides deterministic outputs and is safe for UI testing without database access.
-- If you add a real DB driver or change the driver version, update `pom.xml` accordingly.
-- If you want a single executable JAR that bundles dependencies, I can add a Maven Shade plugin configuration and produce a fat JAR.
-
----
-
-If you want, I can:
-
-- Add a Maven `exec` plugin configuration to `pom.xml` to simplify running.
-- Create a shaded (fat) JAR for a single-file distribution.
-- Remove the deprecated headless stub file entirely.
-
----
-
-## IN452_MovieLens — Test JVM agent handling
-
-What I changed
-
-- The build now copies the byte-buddy agent into target (maven-dependency-plugin) and sets surefire to preload it. This avoids Mockito/Byte‑Buddy dynamically attaching an agent at test runtime.
-- The byte-buddy agent version is controlled via the bytebuddy.version property in pom.xml.
-
-How to run tests
-
-- mvn test
-
-If you need to change the agent version
-
-- Edit the bytebuddy.version property in pom.xml. The build will copy that agent JAR into target and surefire will use it.
-
-Notes
-
-- Tests should run without the Mockito self-attach warning after this change. A JVM bootstrap classpath sharing warning may still appear; it is unrelated to the agent.

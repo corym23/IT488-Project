@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.pug.in452.IN452_MovieLens.AppTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 s -- in com.pug.in452.IN452_MovieLens.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in com.pug.in452.IN452_MovieLens.AppTest
