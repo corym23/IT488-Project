@@ -2,27 +2,13 @@ package com.pug.in452.IN452_MovieLens;
 
 /**
  * MovieLensSimulator simulates database activity against a MovieLens-style
- * database using multiple background threads.  It is intentionally lightweight
- * and prints human-readable status messages to System.out so a GUI can
- * capture and display them.
- *
- * Behavior summary:
- * - When startSimulation() is called three threads are started:
- *   * movieThread: frequently queries movie-related endpoints (movie count,
- *     popular genres) at the configured simulation speed.
- *   * ratingThread: queries rating-related endpoints (ratings count,
- *     top-rated movies) at approximately half the frequency of movieThread.
- *   * monitorThread: tracks the number of monitor cycles and stops the
- *     simulation automatically after a predefined number of cycles (5).
- * - stopSimulation() stops all threads by flipping the running flag and
- *   interrupting sleeping threads so they terminate promptly.
- * - setSimulationSpeed(int) updates the delay used by the threads (in ms). It
- *   interrupts threads so they pick up the new value immediately.
-
+ * database using multiple background threads. It now depends on the
+ * MovieDatabase interface so it can work with the real DB (MovieLensDB)
+ * or the demo implementation (DemoMovieLensDB).
  */
 public class MovieLensSimulator {
 
-    private final MovieLensDB dbController;
+    private final MovieDatabase dbController;
     private volatile boolean isRunning = false;
     private volatile int simulationSpeed = 1000; // milliseconds
 
@@ -38,7 +24,7 @@ public class MovieLensSimulator {
      *                   DemoMovieLensDB in environments where a real DB is
      *                   unavailable.
      */
-    public MovieLensSimulator(MovieLensDB controller) {
+    public MovieLensSimulator(MovieDatabase controller) {
         this.dbController = controller;
         System.out.println("MovieLensSimulator initialized (speed=" + simulationSpeed + " ms)");
     }
@@ -70,10 +56,14 @@ public class MovieLensSimulator {
             try {
                 while (isRunning) {
                     try {
-                        String count = dbController.getMovieCount();
+                        int count = dbController.getMovieCount();
                         System.out.println("[MovieThread] Movie count: " + count);
-                        String genres = dbController.getPopularGenres();
-                        System.out.println("[MovieThread] Popular genres:\n" + genres);
+
+                        GenreCount[] genres = dbController.getPopularGenres(5);
+                        System.out.println("[MovieThread] Popular genres:");
+                        if (genres != null) {
+                            for (GenreCount g : genres) System.out.println(g.getGenre() + " - " + g.getCount());
+                        }
                     } catch (Exception e) {
                         System.err.println("[MovieThread] Error during DB operations: " + e.getMessage());
                     }
@@ -96,16 +86,19 @@ public class MovieLensSimulator {
             try {
                 while (isRunning) {
                     try {
-                        String ratings = dbController.getRatingsCount();
+                        int ratings = dbController.getRatingsCount();
                         System.out.println("[RatingThread] Ratings count: " + ratings);
-                        String top = dbController.getTopRatedMovies();
-                        System.out.println("[RatingThread] Top rated movies:\n" + top);
+
+                        MovieRating[] top = dbController.getTopRatedMovies(5);
+                        System.out.println("[RatingThread] Top rated movies:");
+                        if (top != null) {
+                            for (MovieRating r : top) System.out.println(r.getTitle() + " - " + r.getRating());
+                        }
                     } catch (Exception e) {
                         System.err.println("[RatingThread] Error during DB operations: " + e.getMessage());
                     }
 
                     try {
-                        // Run at half frequency compared to movieThread
                         Thread.sleep(Math.max(1, simulationSpeed * 2));
                     } catch (InterruptedException ie) {
                         System.out.println("[RatingThread] Interrupted, exiting...");

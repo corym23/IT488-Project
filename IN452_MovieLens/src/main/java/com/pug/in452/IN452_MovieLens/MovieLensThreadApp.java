@@ -31,7 +31,7 @@ public class MovieLensThreadApp extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private MovieLensDB controller;
+    private MovieDatabase controller;
     private MovieLensSimulator simulator;
 
     private final JTextArea logArea = new JTextArea();
@@ -141,9 +141,10 @@ public class MovieLensThreadApp extends JFrame {
         // Hard-coded connection string (as requested). Adjust if your DB differs.
         String connStr = "jdbc:sqlserver://localhost;databaseName=IN452;user=IN452_User;password=P@55W0rd!;encrypt=false;";
         try {
-            controller = new MovieLensDB(connStr);
-            boolean ok = controller.testConnection();
+            MovieLensDB db = MovieLensDB.getInstance(connStr);
+            boolean ok = db.testConnection();
             if (ok) {
+                controller = db;
                 simulator = new MovieLensSimulator(controller);
                 startButton.setEnabled(true);
                 System.out.println("Connected to database successfully.");

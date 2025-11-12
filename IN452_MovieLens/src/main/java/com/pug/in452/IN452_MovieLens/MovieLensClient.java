@@ -15,55 +15,6 @@ package com.pug.in452.IN452_MovieLens;
  *      * popular genres (GenreCount[])
  *      * popular tags (TagCount[])
  *  - The output is printed.
- *
- * Configuration & usage
- * ---------------------
- *  - Default JDBC URL (used when no args are provided):
- *      jdbc:sqlserver://localhost;databaseName=IN452;user=IN452_User;password=P@55W0rd!;encrypt=false;
- *
- *  - To override the JDBC URL on the command line with Maven exec:java use:
- *      mvn -DskipTests -Dexec.mainClass=com.pug.in452.IN452_MovieLens.MovieLensClient \
- *          -Dexec.args="\"jdbc:sqlserver://host;databaseName=IN452;user=USER;password=PWD;\"" exec:java
- *
- *  - If running with java -cp, ensure both target/classes and the JDBC jar
- *    are present on the classpath:
- *      java -cp target/classes:/path/to/mssql-jdbc.jar com.pug.in452.IN452_MovieLens.MovieLensClient "<jdbc-url>"
- *
- * Adapter responsibilities (short overview)
- * -----------------------------------------
- *  - MovieLensAdapter is an implementation of the MovieDatabase interface
- *    that provides a clean, typed API for clients. It converts raw SQL
- *    results into small domain POJOs (MovieRating, GenreCount, TagCount).
- *  - The adapter delegates to MovieLensDB which executes SQL and returns
- *    typed values. MovieLensDB currently contains methods like
- *    fetchTopRatedMovies, fetchPopularGenres and so on.
- *
- * Troubleshooting tips
- * --------------------
- *  - "No suitable driver found": driver not on classpath. Use Maven exec
- *    or include the driver jar in the classpath when running with java -cp.
- *  - Connection failures: verify SQL Server is running, the host/port are
- *    reachable from this machine, and credentials are correct.
- *  - Slow queries: add indexes on ratings(movieId), ratings(userId), tags(tag)
- *    and consider caching or pre-computing heavy aggregates.
- *
- * Output format
- * -------------
- * The client prints sections separated by blank lines. Example:
- *
- * Movie Count: 9742
- *
- * Top 5 Movies:
- * 12 Angry Men (1997) - 5.0
- * ...
- *
- * Popular Genres:
- * Drama - 4361
- * ...
- *
- * Popular Tags:
- * In Netflix queue - 131
- * ...
  */
 public class MovieLensClient {
     public static void main(String[] args) {

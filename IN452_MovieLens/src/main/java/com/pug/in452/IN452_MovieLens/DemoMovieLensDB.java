@@ -1,99 +1,73 @@
 package com.pug.in452.IN452_MovieLens;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * DemoMovieLensDB provides lightweight, deterministic, in-memory responses
  * that emulate a MovieLens database. This class is intended for development
  * and UI demonstration where a real JDBC database is not available or
- * desired. It extends MovieLensDB but overrides query methods to return
- * canned strings rather than executing SQL.
+ * desired.
  *
- * Usage notes:
- * - This class is not intended for production use.
- * - Methods return human-readable strings formatted similarly to the
- *   real MovieLensDB outputs so the simulator and GUI can display them
- *   without any changes.
+ * It implements the MovieDatabase interface rather than extending
+ * MovieLensDB so it doesn't require access to MovieLensDB constructors.
  */
-public class DemoMovieLensDB extends MovieLensDB {
+public class DemoMovieLensDB implements MovieDatabase {
 
-    /**
-     * Default constructor. Calls the parent constructor with an empty
-     * connection string. The class overrides all database access methods
-     * so the connection string is unused.
-     */
     public DemoMovieLensDB() {
-        // Call the String constructor with a dummy connection string; we will override methods
-        super("");
+        // no-op; uses in-memory canned responses
     }
 
-    /**
-     * Returns a demo movie count.
-     * @return a short string representing the total number of movies
-     */
     @Override
-    public String getMovieCount() {
-        return "100 (demo)";
+    public int getMovieCount() {
+        return 100;
     }
 
-    /**
-     * Returns a short list of demo movie titles.
-     * @return formatted titles string
-     */
     @Override
-    public String getMovieTitles() {
-        return "Movie Titles (demo):\nMovie A\nMovie B\nMovie C\n";
+    public String[] getMovieTitles(int limit) {
+        List<String> list = new ArrayList<>();
+        list.add("Movie A");
+        list.add("Movie B");
+        list.add("Movie C");
+        return list.subList(0, Math.min(limit, list.size())).toArray(new String[0]);
     }
 
-    /**
-     * Returns a demo ratings count.
-     * @return formatted ratings count
-     */
     @Override
-    public String getRatingsCount() {
-        return "1000 (demo)";
+    public int getRatingsCount() {
+        return 1000;
     }
 
-    /**
-     * Returns a short demo top-rated movies list.
-     * @return formatted top rated movies string
-     */
     @Override
-    public String getTopRatedMovies() {
-        return "Top Rated Movies (demo):\nTop Movie 1 - 4.8\nTop Movie 2 - 4.7\n";
+    public MovieRating[] getTopRatedMovies(int limit) {
+        List<MovieRating> out = new ArrayList<>();
+        out.add(new MovieRating("Top Movie 1", 4.8));
+        out.add(new MovieRating("Top Movie 2", 4.7));
+        return out.subList(0, Math.min(limit, out.size())).toArray(new MovieRating[0]);
     }
 
-    /**
-     * Returns a demo total user count.
-     * @return formatted total user count
-     */
     @Override
-    public String getTotalUsers() {
-        return "500 (demo)";
+    public int getUserCount() {
+        return 50;
     }
 
-    /**
-     * Returns a demo popular genres report.
-     * @return formatted popular genres string
-     */
     @Override
-    public String getPopularGenres() {
-        return "Popular Genres (demo):\nDrama - 50\nComedy - 45\n";
+    public GenreCount[] getPopularGenres(int limit) {
+        List<GenreCount> out = new ArrayList<>();
+        out.add(new GenreCount("Drama", 50));
+        out.add(new GenreCount("Comedy", 45));
+        return out.subList(0, Math.min(limit, out.size())).toArray(new GenreCount[0]);
     }
 
-    /**
-     * Returns a demo total tags count.
-     * @return formatted total tags
-     */
     @Override
-    public String getTotalTags() {
-        return "200 (demo)";
+    public int getTagsCount() {
+        return 200;
     }
 
-    /**
-     * Returns a demo list of popular tags.
-     * @return formatted popular tags string
-     */
     @Override
-    public String getPopularTags() {
-        return "Popular Tags (demo):\ntag1 - 30\ntag2 - 25\n";
+    public TagCount[] getPopularTags(int limit) {
+        List<TagCount> out = new ArrayList<>();
+        out.add(new TagCount("tag1", 30));
+        out.add(new TagCount("tag2", 25));
+        return out.subList(0, Math.min(limit, out.size())).toArray(new TagCount[0]);
     }
 }
