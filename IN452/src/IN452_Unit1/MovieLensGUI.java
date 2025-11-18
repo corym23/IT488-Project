@@ -1,6 +1,9 @@
 package IN452_Unit1;
 
 import javax.swing.*;
+
+import org.junit.internal.Throwables;
+
 import java.awt.*;
 
 /**
@@ -106,7 +109,9 @@ public class MovieLensGUI extends JFrame {
             } else {
                 movieDB = null; // Reset on failure
                 JOptionPane.showMessageDialog(this, "Connection failed. Check console for errors.", "Error", JOptionPane.ERROR_MESSAGE);
+                Throwables.getStacktrace(null);
             }
+            
         });
 
         // Action Listener for the Movie Count Button

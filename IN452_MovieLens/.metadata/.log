@@ -32,3 +32,65 @@ Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.
 
 !ENTRY org.eclipse.oomph.setup.ui 1 0 2025-10-14 21:12:01.211
 !MESSAGE Setup tasks were performed during startup updating 1 preference. See '/Applications/Eclipse Java.app/Contents/Eclipse/configuration/org.eclipse.oomph.setup/setup.log' for details
+!SESSION 2025-11-17 20:49:33.472 -----------------------------------------------
+eclipse.buildId=4.36.0.20250605-1300
+java.version=21.0.8
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/corymccombs/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/corymccombs/.eclipse_keyring -data /Users/corymccombs/git/PUG/IN452_MovieLens
+
+!ENTRY ch.qos.logback.classic 1 0 2025-11-17 20:49:38.604
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY org.eclipse.lemminx.uber-jar 4 0 2025-11-17 20:49:38.967
+!MESSAGE bundle org.eclipse.lemminx.uber-jar:0.31.0 (532) Component descriptor entry 'OSGI-INF/*.xml' not found
+
+!ENTRY ch.qos.logback.classic 1 0 2025-11-17 20:49:41.244
+!MESSAGE Logback config file: /Users/corymccombs/git/PUG/IN452_MovieLens/.metadata/.plugins/org.eclipse.m2e.logback/logback.2.7.100.20250418-1315.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-11-17 20:49:50.197
+!MESSAGE [Info] Starting language server with binary lsp agent.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-11-17 20:49:50.199
+!MESSAGE [Info] Found native binary in fragment bundle: com.microsoft.copilot.eclipse.core.agent.macosx.x64
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-11-17 20:49:50.291
+!MESSAGE [Info] Lsp agent started successfully.
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-11-17 20:49:53.451
+!MESSAGE [Info]	[lsp] GitHub Copilot Language Server 1.363.0 initialized
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-11-17 20:49:54.009
+!MESSAGE [Info]	[certificates] Removed 4 expired certificates
+!SESSION 2025-11-17 20:52:15.466 -----------------------------------------------
+eclipse.buildId=4.36.0.20250605-1300
+java.version=21.0.8
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/corymccombs/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/corymccombs/.eclipse_keyring -data /Users/corymccombs/git/PUG/IN452_MovieLens
+
+!ENTRY ch.qos.logback.classic 1 0 2025-11-17 20:52:20.717
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY org.eclipse.lemminx.uber-jar 4 0 2025-11-17 20:52:21.075
+!MESSAGE bundle org.eclipse.lemminx.uber-jar:0.31.0 (532) Component descriptor entry 'OSGI-INF/*.xml' not found
+
+!ENTRY ch.qos.logback.classic 1 0 2025-11-17 20:52:23.029
+!MESSAGE Logback config file: /Users/corymccombs/git/PUG/IN452_MovieLens/.metadata/.plugins/org.eclipse.m2e.logback/logback.2.7.100.20250418-1315.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-11-17 20:52:32.617
+!MESSAGE [Info] Starting language server with binary lsp agent.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-11-17 20:52:32.620
+!MESSAGE [Info] Found native binary in fragment bundle: com.microsoft.copilot.eclipse.core.agent.macosx.x64
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-11-17 20:52:32.752
+!MESSAGE [Info] Lsp agent started successfully.
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-11-17 20:52:36.552
+!MESSAGE [Info]	[lsp] GitHub Copilot Language Server 1.363.0 initialized
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-11-17 20:52:37.146
+!MESSAGE [Info]	[certificates] Removed 4 expired certificates
