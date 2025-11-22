@@ -11,14 +11,11 @@
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
-  <properties>
+<properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
-    <!-- Byte Buddy agent version property to avoid hardcoding -->
-    <bytebuddy.version>1.17.6</bytebuddy.version>
-    <!-- Default JDBC URL used by exec:java; can be overridden with -Djdbc.url=... -->
+    <maven.compiler.release>8</maven.compiler.release> <bytebuddy.version>1.17.6</bytebuddy.version>
     <jdbc.url>jdbc:sqlserver://localhost;databaseName=IN452;user=IN452_User;password=P@55W0rd!;encrypt=false;</jdbc.url>
-  </properties>
+</properties>
 
   <dependencyManagement>
     <dependencies>
