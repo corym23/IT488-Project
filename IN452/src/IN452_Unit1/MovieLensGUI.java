@@ -126,8 +126,11 @@ public class MovieLensGUI extends JFrame {
         titlesButton.addActionListener(e -> {
             if (checkConnection()) {
                 String titles = movieDB.getMovieTitles();
-                showScrollableMessage("Movie Titles", titles);
-                
+                StringBuilder sb = new StringBuilder();
+                sb.append("Top 50 Movies:\n");
+                sb.append(titles == null ? "" : titles);
+                showScrollableMessage("Movie Titles", sb.toString());
+
             }
         });
 

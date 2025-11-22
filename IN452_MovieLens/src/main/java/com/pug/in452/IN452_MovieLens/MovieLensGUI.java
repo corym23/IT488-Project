@@ -57,7 +57,7 @@ public class MovieLensGUI extends JFrame {
 		tagsButton = new JButton("Get Total Tags");
 		popTagsButton = new JButton("Get Popular Tags");
 		dbUsername = new JTextField("IN452_User");
-		dbPassword = new JPasswordField();
+		dbPassword = new JPasswordField("P@55W0rd!");
 		dbServer = new JTextField("localhost");
 
 		// Set default size for all buttons to 285x35
@@ -351,6 +351,7 @@ public class MovieLensGUI extends JFrame {
 			if (checkConnection()) {
 				String[] titles = movieDB.getMovieTitles(50);
 				StringBuilder sb = new StringBuilder();
+				sb.append("Top 50 Movie Titles:\n\n");
 				for (String t : titles)
 					sb.append(t).append('\n');
 				showScrollableMessage("Movie Titles", sb.toString());
@@ -367,11 +368,12 @@ public class MovieLensGUI extends JFrame {
 			}
 		});
 
-		// Action Listener for the Get The Top Rated Movies Button
+		// Action Listener for the Get The Top 20 Rated Movies Button
 		topRatedButton.addActionListener(e -> {
 			if (checkConnection()) {
 				MovieRating[] top = movieDB.getTopRatedMovies(20);
 				StringBuilder sb = new StringBuilder();
+				sb.append("Top 20 Rated Movie Titles:\n\n");
 				for (MovieRating r : top)
 					sb.append(r.getTitle()).append(" - ").append(r.getRating()).append('\n');
 				showScrollableMessage("Top Rated Movies: ", sb.toString());
@@ -390,6 +392,7 @@ public class MovieLensGUI extends JFrame {
 			if (checkConnection()) {
 				GenreCount[] popGenres = movieDB.getPopularGenres(10);
 				StringBuilder sb = new StringBuilder();
+				sb.append("Popular Genres:\n\n");
 				for (GenreCount g : popGenres)
 					sb.append(g.getGenre()).append(" - ").append(g.getCount()).append('\n');
 				showScrollableMessage("Popular Genres", sb.toString());
@@ -408,6 +411,7 @@ public class MovieLensGUI extends JFrame {
 			if (checkConnection()) {
 				TagCount[] popTags = movieDB.getPopularTags(15);
 				StringBuilder sb = new StringBuilder();
+				sb.append("Popular Tags:\n\n");
 				for (TagCount t : popTags)
 					sb.append(t.getTag()).append(" - ").append(t.getCount()).append('\n');
 				showScrollableMessage("Popular Tags", sb.toString());

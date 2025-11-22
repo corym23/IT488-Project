@@ -134,7 +134,7 @@ public class MovieLensDB implements MovieDatabase {
         String sql = "SELECT TOP 50 title FROM movies ORDER BY movieId ASC;";
 
         StringBuilder titles = new StringBuilder();
-        titles.append("Movie Titles (Top 50):\n");
+        titles.append("Top 50 Movie Titles:\n\n");
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -154,6 +154,7 @@ public class MovieLensDB implements MovieDatabase {
      */
     public String getRatingsCountString() {
         String sql = "select Count(rating) TotalRatings from ratings";
+        
 
         try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
