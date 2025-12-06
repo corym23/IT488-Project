@@ -1,9 +1,0 @@
-This Java class, `IN352_McCombs_Cory_Unit1_Assignment`, demonstrates the use of recursion to solve two classic problems: calculating Fibonacci numbers and computing factorials. The class is structured for an academic assignment, with clear sections and comments guiding the implementation.
-
-At the top, a static integer array `fibMemo` is declared for memoization, which helps optimize the recursive Fibonacci calculation by storing previously computed results. This prevents redundant calculations and significantly improves performance for larger input values.
-
-In the `main` method, the program first prints a blank line, then calculates the 10th Fibonacci number by calling the `Fibonacci` method with the argument `10`. The result is printed in a descriptive format. The `Fibonacci` method itself uses recursion and memoization: it checks for base cases (0 and 1), throws an exception for negative input, and otherwise recursively computes the value while storing results in the `fibMemo` array.
-
-The second section of the `main` method prints another blank line and then uses a loop to calculate and print the factorials of numbers 1 through 4. The `factorial` method is a straightforward recursive implementation: it returns 1 for the base cases (0 or 1), and otherwise multiplies the current number by the factorial of the previous number.
-
-Overall, this code provides clear examples of recursion, base cases, and memoization, making it a strong educational resource for understanding these fundamental programming concepts.
