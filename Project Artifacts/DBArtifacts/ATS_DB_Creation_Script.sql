@@ -1,7 +1,16 @@
 -- SQL Script to Create the Attendance Tracking System (ATS) Database Schema
 
 -- ----------------------------------------------------------------------
--- 1. Create the Roster Table (Based on 'ATS-DB-Structure.xlsx - RosterTable.csv')
+-- 0. Create the ATS Schema
+-- ----------------------------------------------------------------------
+IF SCHEMA_ID(N'ATS') IS NULL
+BEGIN
+    EXEC('CREATE SCHEMA ATS');
+END
+GO
+
+-- ----------------------------------------------------------------------
+-- 1. Create the Roster Table 
 --    This table holds the authoritative list of approved names and their class context.
 -- ----------------------------------------------------------------------
 CREATE TABLE Roster (
@@ -21,7 +30,7 @@ CREATE TABLE Roster (
 );
 
 -- ----------------------------------------------------------------------
--- 2. Create the SubmissionLog Table (Based on 'ATS-DB-Structure.xlsx - SubmissionLog.csv')
+-- 2. Create the SubmissionLog Table
 --    This table stores every attempt to log attendance (success or failure).
 -- ----------------------------------------------------------------------
 CREATE TABLE SubmissionLog (
@@ -53,10 +62,10 @@ CREATE TABLE SubmissionLog (
 -- 3. Create Indexes for Performance
 -- ----------------------------------------------------------------------
 
--- Index for fast lookup by ClassID and StudentName (used by the Backend Submission Service for validation)
+-- Index for fast lookup by ClassID and StudentName
 CREATE INDEX IX_Roster_Lookup
 ON Roster (ClassID, StudentName);
 
--- Index for the Audit View (User Story 7: last 25 records, ordered by timestamp descending)
+-- Index for the Audit View
 CREATE INDEX IX_SubmissionLog_Timestamp
 ON SubmissionLog (SubmissionTimestamp DESC);
