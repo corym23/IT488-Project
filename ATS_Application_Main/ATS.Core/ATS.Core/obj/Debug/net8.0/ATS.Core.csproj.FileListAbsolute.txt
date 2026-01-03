@@ -1,0 +1,11 @@
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ATS.Core.GeneratedMSBuildEditorConfig.editorconfig
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ATS.Core.AssemblyInfoInputs.cache
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ATS.Core.AssemblyInfo.cs
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ATS.Core.csproj.CoreCompileInputs.cache
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\bin\Debug\net8.0\ATS.Core.deps.json
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\bin\Debug\net8.0\ATS.Core.dll
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\bin\Debug\net8.0\ATS.Core.pdb
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ATS.Core.dll
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\refint\ATS.Core.dll
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ATS.Core.pdb
+E:\Perdue university assignments\IT488 Software Product Development\ATS.Core\ATS.Core\obj\Debug\net8.0\ref\ATS.Core.dll
