@@ -70,7 +70,7 @@ export default function App() {
                     <input
                         value={typedName}
                         onChange={(e) => setTypedName(e.target.value)}
-                        placeholder="Last First Name"
+                        placeholder="First Name Last Name"
                         style={{
                             width: "100%",
                             padding: 12,
