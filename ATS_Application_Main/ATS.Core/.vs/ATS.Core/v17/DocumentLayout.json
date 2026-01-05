@@ -1,0 +1,88 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|e:\\perdue university assignments\\it488 software product development\\ats.core\\ats.core\\services\\rosterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|solutionrelative:ats.core\\services\\rosterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|e:\\perdue university assignments\\it488 software product development\\ats.core\\ats.core\\models\\student.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|solutionrelative:ats.core\\models\\student.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|e:\\perdue university assignments\\it488 software product development\\ats.core\\ats.core\\models\\submission.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|solutionrelative:ats.core\\models\\submission.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|e:\\perdue university assignments\\it488 software product development\\ats.core\\ats.core\\data\\xmlfile1.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{C2C47864-8AF9-418C-ADC4-DBCA85010F2A}|ATS.Core\\ATS.Core.csproj|solutionrelative:ats.core\\data\\xmlfile1.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Submission.cs",
+              "DocumentMoniker": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Models\\Submission.cs",
+              "RelativeDocumentMoniker": "ATS.Core\\Models\\Submission.cs",
+              "ToolTip": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Models\\Submission.cs",
+              "RelativeToolTip": "ATS.Core\\Models\\Submission.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T23:32:32.398Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Student.cs",
+              "DocumentMoniker": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Models\\Student.cs",
+              "RelativeDocumentMoniker": "ATS.Core\\Models\\Student.cs",
+              "ToolTip": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Models\\Student.cs",
+              "RelativeToolTip": "ATS.Core\\Models\\Student.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T23:32:30.624Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "RosterService.cs",
+              "DocumentMoniker": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Services\\RosterService.cs",
+              "RelativeDocumentMoniker": "ATS.Core\\Services\\RosterService.cs",
+              "ToolTip": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Services\\RosterService.cs",
+              "RelativeToolTip": "ATS.Core\\Services\\RosterService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-28T22:34:51.513Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "XMLFile1.xml",
+              "DocumentMoniker": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Data\\XMLFile1.xml",
+              "RelativeDocumentMoniker": "ATS.Core\\Data\\XMLFile1.xml",
+              "ToolTip": "E:\\Perdue university assignments\\IT488 Software Product Development\\ATS.Core\\ATS.Core\\Data\\XMLFile1.xml",
+              "RelativeToolTip": "ATS.Core\\Data\\XMLFile1.xml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2025-12-27T00:34:40.766Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

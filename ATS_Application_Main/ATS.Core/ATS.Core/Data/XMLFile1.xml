@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Roster>
+	<Student>
+		<ID>1</ID>
+		<FirstName>Adam</FirstName>
+		<LastName>Voss</LastName>
+		<ClassID>101</ClassID>
+		<ClassName>IT488</ClassName>
+	</Student>
+	<Student>
+		<ID>2</ID>
+		<FirstName>Jacqueline</FirstName>
+		<LastName>Vo</LastName>
+		<ClassID>101</ClassID>
+		<ClassName>IT488</ClassName>
+	</Student>
+	<Student>
+		<ID>3</ID>
+		<FirstName>Richard</FirstName>
+		<LastName>Sanchez</LastName>
+		<ClassID>101</ClassID>
+		<ClassName>IT488</ClassName>
+	</Student>
+	<Student>
+		<ID>4</ID>
+		<FirstName>Cory</FirstName>
+		<LastName>Mccombs</LastName>
+		<ClassID>101</ClassID>
+		<ClassName>IT488</ClassName>
+	</Student>
+	
+</Roster>
+
