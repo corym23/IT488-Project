@@ -8,7 +8,7 @@ namespace ATS.Core.Models
         public int StudentID { get; set; }  // FK to Student
         public DateTime SubmissionTime { get; set; }
 
-        // set by server-side validation logic (API)
+        // set by server-side validation logic (API) 
         public bool Success { get; set; } 
     }
 }
