@@ -72,8 +72,8 @@ export default function App() {
                         onChange={(e) => setTypedName(e.target.value)}
                         placeholder="First Name Last Name"
                         style={{
-                            width: "100%",
-                            padding: 12,
+                            width: "90%",
+                            padding: 12, // increased padding for better touch targets 
                             borderRadius: 10,
                             border: "1px solid #ccc",
                         }} />
