@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ATS.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a644b45c86be90834a21adba10a95a8661352bee")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e8a80a4f0e4d8ed5fabcd630c4f07c80b63939a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ATS.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ATS.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
