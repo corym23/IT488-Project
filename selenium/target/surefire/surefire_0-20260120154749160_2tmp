@@ -1,0 +1,5 @@
+#surefire_0
+#Tue Jan 20 15:47:49 CST 2026
+baseUrl=http\://localhost\:5173
+basedir=/Users/corymccombs/git/AttendanceTrackingSystem/selenium
+localRepository=/Users/corymccombs/.m2/repository
