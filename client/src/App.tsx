@@ -44,8 +44,11 @@ function App() {
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setMessage("");
-        const selected = dropdownName || radioName;
-        if (!selected) {
+
+        // dDropdown OR radio
+        const selectedName = dropdownName || radioName;
+
+        if (!selectedName) {
             setMessage("Please select your name.");
             return;
         }
@@ -109,9 +112,14 @@ function App() {
     }
 
     return (
-        <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
-            <h2>Attendance Form</h2>
 
+        <form  
+            onSubmit={handleSubmit}
+            style={{ maxWidth: 600, margin: "0 auto", padding: 20, border: "1px solid #ccc", borderRadius: 8}}
+        >
+        
+           <h2>Attendance Form</h2> 
+            
             <label>Name (Dropdown)</label>
             <select
                 ref={dropdownRef}
@@ -127,7 +135,9 @@ function App() {
                 ))}
             </select>
 
-            <p style={{ margin: "12px 0" }}>OR</p>
+            <p style={{ margin: "16px 0", color: "#666", fontSize: "0.9rem", fontWeight: 500, textTransform: "uppercase" }}>
+            OR
+            </p>
 
             {names.map((n) => (
                 <div key={n}>
@@ -138,9 +148,25 @@ function App() {
                 </div>
             ))}
 
-            <button type="submit" style={{ marginTop: 15 }}>
-                Submit
+
+            <button
+                type="submit"
+                style={{
+                    marginTop: 15,
+                    padding: "5px 10px",
+                    borderRadius: 5,
+                    border: "1px solid #222",
+                    backgroundColor: "#f9f9f9",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    transition: "background-color 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#eee")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#f9f9f9")}
+            >
+            Submit   
             </button>
+            
 
             <p style={{ color: "crimson" }}>{message}</p>
         </form>
