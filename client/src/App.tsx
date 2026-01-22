@@ -1,64 +1,100 @@
 ﻿import { useEffect, useState, useRef } from "react";
 
 function App() {
+    // Roster names from XML
     const [names, setNames] = useState<string[]>([]);
+
+    // Dropdown OR Radio
     const [dropdownName, setDropdownName] = useState("");
     const [radioName, setRadioName] = useState("");
+
+    // Success screen state
     const [submitted, setSubmitted] = useState(false);
     const [submittedName, setSubmittedName] = useState("");
     const [submittedTime, setSubmittedTime] = useState("");
+
+    // Error message
     const [message, setMessage] = useState("");
+
+    // Log another
     const dropdownRef = useRef<HTMLSelectElement | null>(null);
 
+    // Load roster from XML
     useEffect(() => {
         fetch("/roster.xml")
-            .then((r) => r.text())
+            .then((response) => response.text())
             .then((xmlText) => {
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(xmlText, "application/xml");
+
                 const nameElements = xml.getElementsByTagName("name");
-                const loaded: string[] = [];
+                const loadedNames: string[] = [];
+
                 for (let i = 0; i < nameElements.length; i++) {
-                    const t = nameElements[i].textContent;
-                    if (t) loaded.push(t);
+                    const text = nameElements[i].textContent;
+                    if (text) {
+                        loadedNames.push(text);
+                    }
                 }
-                setNames(loaded);
+
+                setNames(loadedNames);
             })
-            .catch(() => setMessage("Error loading roster"));
+            .catch(() => {
+                setMessage("Error loading roster");
+            });
     }, []);
 
     useEffect(() => {
-        if (!submitted) dropdownRef.current?.focus();
+        if (!submitted) {
+            setTimeout(() => {
+                dropdownRef.current?.focus();
+            }, 0);
+        }
     }, [submitted]);
 
+    // Dropdown change = clear radio so they don't work in tandem
     function handleDropdownChange(value: string) {
         setDropdownName(value);
-        if (value) setRadioName("");
+        if (value) {
+            setRadioName("");
+        }
     }
 
+    // Radio change = clear dropdown so they don't work in tandem
     function handleRadioChange(value: string) {
         setRadioName(value);
-        if (value) setDropdownName("");
+        if (value) {
+            setDropdownName("");
+        }
     }
 
-    function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
+    function handleSubmit(event: React.FormEvent) {
+        event.preventDefault();
         setMessage("");
 
-        // dDropdown OR radio
+        // Dropdown OR radio
         const selectedName = dropdownName || radioName;
 
         if (!selectedName) {
             setMessage("Please select your name.");
             return;
         }
-        const timestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
-        setSubmittedName(selected);
+
+        // Timestamp
+        const timestamp = new Date()
+            .toISOString()
+            .replace("T", " ")
+            .substring(0, 19);
+
+        // Save submission, then switch to success screen
+        setSubmittedName(selectedName);
         setSubmittedTime(timestamp);
         setSubmitted(true);
     }
 
+    // Button on success screen
     function handleLogAnother() {
+        // Reset everything back to the beginning
         setSubmitted(false);
         setSubmittedName("");
         setSubmittedTime("");
@@ -67,10 +103,13 @@ function App() {
         setMessage("");
     }
 
+    // SUCCESS CONFIRMATION SCREEN
     if (submitted) {
         return (
             <div style={{ maxWidth: 600, margin: "30px auto", textAlign: "center" }}>
-                <h2 style={{ color: "#00c853", marginBottom: "35px" }}>Attendance Logged Successfully</h2>
+                <h2 style={{ color: "#00c853", marginBottom: "35px" }}>
+                    Attendance Logged Successfully
+                </h2>
 
                 <div
                     style={{
@@ -92,6 +131,7 @@ function App() {
                     </div>
                 </div>
 
+                {/* Log another button */}
                 <button
                     type="button"
                     onClick={handleLogAnother}
@@ -111,6 +151,7 @@ function App() {
         );
     }
 
+    // ✅ INITIAL SUBMISSION SCREEN
     return (
 
         <form  
@@ -128,9 +169,9 @@ function App() {
                 style={{ width: "100%", padding: 8 }}
             >
                 <option value="">Select your name</option>
-                {names.map((n) => (
-                    <option key={n} value={n}>
-                        {n}
+                {names.map((name) => (
+                    <option key={name} value={name}>
+                        {name}
                     </option>
                 ))}
             </select>
@@ -139,11 +180,16 @@ function App() {
             OR
             </p>
 
-            {names.map((n) => (
-                <div key={n}>
+            {names.map((name) => (
+                <div key={name}>
                     <label>
-                        <input type="radio" name="roster" checked={radioName === n} onChange={() => handleRadioChange(n)} />
-                        {n}
+                        <input
+                            type="radio"
+                            name="roster"
+                            checked={radioName === name}
+                            onChange={() => handleRadioChange(name)}
+                        />
+                        {name}
                     </label>
                 </div>
             ))}
@@ -174,4 +220,3 @@ function App() {
 }
 
 export default App;
-
