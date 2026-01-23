@@ -3,52 +3,13 @@
     margin: 0;
 }
 
-#root {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center; /* horizontal center */
-    align-items: center; /* vertical center */
-    padding: 24px;
-    box-sizing: border-box;
-    font-family: system-ui, Arial, sans-serif;
-}
-html, body {
-    height: 100%;
-    margin: 0;
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
 /* Global typography */
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 16px;       /* body text size */
-  line-height: 1.5;
-  color: #222;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px; /* body text size */
+    line-height: 1.5;
+    color: #222;
 }
-
-/* Headings (consistent across screens) */
-h1 { font-size: 1.8rem; font-weight: 600; margin: 0 0 12px; }
-h2 { font-size: 1.4rem; font-weight: 600; margin: 0 0 12px; }
-h3 { font-size: 1.2rem; font-weight: 600; margin: 0 0 10px; }
-
-/* Form text */
-label { font-size: 0.95rem; font-weight: 500; }
-input, select, button { font-size: 0.95rem; }
-
-/* Your existing centered layout */
-#root {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: center;     /* vertical center */
-  padding: 24px;
-  box-sizing: border-box;
-}
-
 
 /* Headings (consistent across screens) */
 h1 {
@@ -75,10 +36,13 @@ label {
     font-weight: 500;
 }
 
-input, select, button {
+input,
+select,
+button {
     font-size: 0.95rem;
 }
 
+/* Centered app layout */
 #root {
     min-height: 100vh;
     display: flex;
@@ -86,4 +50,13 @@ input, select, button {
     align-items: center; /* vertical center */
     padding: 24px;
     box-sizing: border-box;
+}
+
+/* Keyboard focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid #00c853;
+    outline-offset: 2px;
 }
