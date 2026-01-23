@@ -151,10 +151,10 @@ function App() {
         );
     }
 
-    // ✅ INITIAL SUBMISSION SCREEN
+    // INITIAL SUBMISSION SCREEN
     return (
         <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
-            <h2>Attendance Form</h2>
+            <h2>Attendance Tracking System</h2>
 
             <label>Name (Dropdown)</label>
             <select
