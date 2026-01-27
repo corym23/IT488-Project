@@ -1,11 +1,13 @@
-﻿import { useEffect, useState, useRef } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 
 function App() {
     // Roster names from XML
     const [names, setNames] = useState<string[]>([]);
 
-    // Dropdown OR Radio
-    const [dropdownName, setDropdownName] = useState("");
+    // Search text for filtering names
+    const [searchText, setSearchText] = useState("");
+
+    // Radio selection
     const [radioName, setRadioName] = useState("");
 
     // Success screen state
@@ -13,11 +15,33 @@ function App() {
     const [submittedName, setSubmittedName] = useState("");
     const [submittedTime, setSubmittedTime] = useState("");
 
+    const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+
     // Error message
     const [message, setMessage] = useState("");
 
-    // Log another
-    const dropdownRef = useRef<HTMLSelectElement | null>(null);
+
+    const searchRef = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        function handleMouseDown() {
+            document.body.classList.remove("keyboard-nav");
+        }
+
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key === "Tab") {
+                document.body.classList.add("keyboard-nav");
+            }
+        }
+
+        window.addEventListener("mousedown", handleMouseDown);
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("mousedown", handleMouseDown);
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     // Load roster from XML
     useEffect(() => {
@@ -44,99 +68,180 @@ function App() {
             });
     }, []);
 
+
     useEffect(() => {
-        if (!submitted) {
+        if (shouldFocusSearch) {
             setTimeout(() => {
-                dropdownRef.current?.focus();
+                searchRef.current?.focus();
             }, 0);
+            setShouldFocusSearch(false);
         }
-    }, [submitted]);
+    }, [shouldFocusSearch]);
 
-    // Dropdown change = clear radio so they don't work in tandem
-    function handleDropdownChange(value: string) {
-        setDropdownName(value);
-        if (value) {
-            setRadioName("");
-        }
-    }
-
-    // Radio change = clear dropdown so they don't work in tandem
     function handleRadioChange(value: string) {
         setRadioName(value);
-        if (value) {
-            setDropdownName("");
-        }
     }
+
+    const filteredNames = names.filter((name) =>
+        name.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         setMessage("");
 
-        // Dropdown OR radio
-        const selectedName = dropdownName || radioName;
+        // Must select a valid radio option
+        let selectedName = radioName;
+
+        if (!selectedName && filteredNames.length === 1) {
+            selectedName = filteredNames[0];
+        }
 
         if (!selectedName) {
-            setMessage("Please select your name.");
+            setMessage("Name Not Found");
             return;
         }
 
-        // Timestamp
-        const timestamp = new Date()
-            .toISOString()
-            .replace("T", " ")
-            .substring(0, 19);
 
-        // Save submission, then switch to success screen
+        const timestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
+
         setSubmittedName(selectedName);
         setSubmittedTime(timestamp);
         setSubmitted(true);
     }
 
-    // Button on success screen
     function handleLogAnother() {
-        // Reset everything back to the beginning
         setSubmitted(false);
         setSubmittedName("");
         setSubmittedTime("");
-        setDropdownName("");
+        setSearchText("");
         setRadioName("");
         setMessage("");
+        setShouldFocusSearch(true);
     }
+
+    // Shared card style (keeps widths consistent)
+    const cardStyle: React.CSSProperties = {
+        width: "100%",
+        maxWidth: 480,
+        margin: "0 auto",
+        padding: 20,
+        border: "1px solid #ccc",
+        borderRadius: 8,
+        boxSizing: "border-box",
+    };
 
     // SUCCESS CONFIRMATION SCREEN
     if (submitted) {
         return (
-            <div style={{ maxWidth: 600, margin: "30px auto", textAlign: "center" }}>
-                <h2 style={{ color: "#00c853", marginBottom: "35px" }}>
+            <div style={cardStyle}>
+                <h2
+                    style={{
+                        color: "#00c853",
+                        marginBottom: 35,
+                        textAlign: "center",
+                        fontSize: "1.8rem",
+                    }}
+                >
                     Attendance Logged Successfully
                 </h2>
 
                 <div
                     style={{
                         border: "1px solid #ccc",
-                        borderRadius: "8px",
-                        padding: "16px",
+                        borderRadius: 10,
+                        padding: 22,
                         backgroundColor: "#f9f9f9",
                         textAlign: "center",
+                        fontSize: "1.1rem",
                     }}
                 >
-                    <div style={{ marginBottom: "10px" }}>
-                        <strong>Student Name:</strong>
+                    <div style={{ marginBottom: 10 }}>
+                        <strong style={{ fontSize: "1.05rem" }}>Student Name:</strong>
                         <div>{submittedName}</div>
                     </div>
 
                     <div>
-                        <strong>Time Submitted:</strong>
+                        <strong style={{ fontSize: "1.05rem" }}>Time Submitted:</strong>
                         <div>{submittedTime}</div>
                     </div>
                 </div>
 
-                {/* Log another button */}
-                <button
-                    type="button"
-                    onClick={handleLogAnother}
+                <div style={{ textAlign: "center", marginTop: 20 }}>
+                    <button
+                        type="button"
+                        onClick={handleLogAnother}
+                        style={{
+                            padding: "10px 14px",
+                            borderRadius: 5,
+                            border: "1px solid #222",
+                            backgroundColor: "#f9f9f9",
+                            cursor: "pointer",
+                            fontWeight: 600,
+                        }}
+                    >
+                        Log another
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // INITIAL SUBMISSION SCREEN
+    return (
+        <form onSubmit={handleSubmit} style={cardStyle}>
+            <h2 style={{ textAlign: "center" }}>Attendance Form</h2>
+
+            <label>Search Name</label>
+            <input
+                ref={searchRef}
+                type="text"
+                placeholder="Type your name..."
+                value={searchText}
+                onChange={(e) => {
+                    setSearchText(e.target.value);
+                    setRadioName("");
+                    setMessage("");
+                }}
+                aria-invalid={!!message}
+                aria-describedby={message ? "nameError" : undefined}
+                style={{ width: "100%", padding: 8, boxSizing: "border-box" }}
+            />
+
+            {filteredNames.length > 0 && (
+                <p
                     style={{
-                        marginTop: 20,
+                        margin: "16px 0",
+                        color: "#666",
+                        fontSize: "0.9rem",
+                        fontWeight: 500,
+                        textTransform: "uppercase",
+                    }}
+                >
+                    OR
+                </p>
+            )}
+
+            <div role="radiogroup" aria-describedby={message ? "nameError" : undefined} aria-invalid={!!message}>
+                {filteredNames.map((name) => (
+                    <div key={name} style={{ marginBottom: 8 }}>
+                        <label>
+                            <input
+                                type="radio"
+                                name="roster"
+                                checked={radioName === name}
+                                onChange={() => handleRadioChange(name)}
+                                style={{ marginRight: 8 }}
+                            />
+                            {name}
+                        </label>
+                    </div>
+                ))}
+            </div>
+            <div style={{ textAlign: "center", marginTop: 15 }}>
+                <button
+                    type="submit"
+                    style={{
                         padding: "10px 14px",
                         borderRadius: 5,
                         border: "1px solid #222",
@@ -145,76 +250,20 @@ function App() {
                         fontWeight: 600,
                     }}
                 >
-                    Log another
+                    Submit
                 </button>
             </div>
-        );
-    }
 
-    // INITIAL SUBMISSION SCREEN
-    return (
+            {message && (
+                <p
+                    id="nameError"
+                    role="alert"
+                    style={{ color: "crimson", textAlign: "center", marginTop: 12 }}
+                >
+                    {message}
+                </p>
+            )}
 
-        <form  
-            onSubmit={handleSubmit}
-            style={{ maxWidth: 600, margin: "0 auto", padding: 20, border: "1px solid #ccc", borderRadius: 8}}
-        >
-        
-           <h2>Attendance Form</h2> 
-            
-            <label>Name (Dropdown)</label>
-            <select
-                ref={dropdownRef}
-                value={dropdownName}
-                onChange={(e) => handleDropdownChange(e.target.value)}
-                style={{ width: "100%", padding: 8 }}
-            >
-                <option value="">Select your name</option>
-                {names.map((name) => (
-                    <option key={name} value={name}>
-                        {name}
-                    </option>
-                ))}
-            </select>
-
-            <p style={{ margin: "16px 0", color: "#666", fontSize: "0.9rem", fontWeight: 500, textTransform: "uppercase" }}>
-            OR
-            </p>
-
-            {names.map((name) => (
-                <div key={name}>
-                    <label>
-                        <input
-                            type="radio"
-                            name="roster"
-                            checked={radioName === name}
-                            onChange={() => handleRadioChange(name)}
-                        />
-                        {name}
-                    </label>
-                </div>
-            ))}
-
-
-            <button
-                type="submit"
-                style={{
-                    marginTop: 15,
-                    padding: "5px 10px",
-                    borderRadius: 5,
-                    border: "1px solid #222",
-                    backgroundColor: "#f9f9f9",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                    transition: "background-color 0.2s",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#eee")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#f9f9f9")}
-            >
-            Submit   
-            </button>
-            
-
-            <p style={{ color: "crimson" }}>{message}</p>
         </form>
     );
 }
