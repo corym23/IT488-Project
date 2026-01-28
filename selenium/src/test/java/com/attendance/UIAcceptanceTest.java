@@ -59,6 +59,32 @@ public class UIAcceptanceTest {
         // small pause to allow client to render
         Thread.sleep(500);
 
+        // --- Login step: enter demo credentials and sign in if login form present ---
+        try {
+            List<WebElement> inputs = driver.findElements(By.tagName("input"));
+            if (inputs.size() >= 2) {
+                WebElement nameInput = inputs.get(0);
+                WebElement passwordInput = inputs.get(1);
+                nameInput.sendKeys("Ahmad Kassem");
+                passwordInput.sendKeys("IT488");
+
+                WebElement loginBtn = null;
+                try {
+                    loginBtn = driver.findElement(By.xpath("//button[normalize-space()='Login']"));
+                } catch (Exception ex) {
+                    List<WebElement> buttons = driver.findElements(By.tagName("button"));
+                    if (!buttons.isEmpty())
+                        loginBtn = buttons.get(0);
+                }
+
+                if (loginBtn != null) {
+                    loginBtn.click();
+                    Thread.sleep(400);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         // Try to select from dropdown first, otherwise click a radio
         boolean selected = false;
         try {
