@@ -1,14 +1,96 @@
-<roster>
+﻿<roster>
+	<title>Professor Quirrell's Class</title>
+	
 	<person>
 		<name>Adam Voss</name>
 	</person>
+	
 	<person>
 		<name>Cory Mccombs</name>
 	</person>
+	
 	<person>
 		<name>Jacqueline Vo</name>
 	</person>
+	
 	<person>
 		<name>Richard Sanchez</name>
 	</person>
+	
+	<person>
+		<name>Harry Potter</name>
+	</person>
+	
+	<person>
+		<name>Frodo Baggins</name>
+	</person>
+	
+	<person>
+		<name>Gandalf The Gray</name>
+	</person>
+	
+	<person>
+		<name>Ronald Weasely</name>
+	</person>
+	
+	<person>
+		<name>Albus Dumbledore</name>
+	</person>
+	
+	<person>
+		<name>Lord Voldemort</name>
+	</person>
+	
+	<person>
+		<name>Severus Snape</name>
+	</person>
+	
+	<person>
+		<name>Draco Malfoy</name>
+	</person>
+	
+	<person>
+		<name>Sirius Black</name>
+	</person>
+	
+	<person>
+		<name>Samwise Gamgee</name>
+	</person>
+	
+	<person>
+		<name>Bilbo Bagins</name>
+	</person>
+	
+	<person>
+		<name>Peregrin Took</name>
+	</person>
+	
+	<person>
+		<name>Gimli</name>
+	</person>
+	
+	<person>
+		<name>Arwen</name>
+	</person>
+	
+	<person>
+		<name>Aragorn II</name>
+	</person>
+	
+	<person>
+		<name>Legolas</name>
+	</person>
+	
+	<person>
+		<name>Gollum</name>
+	</person>
+	
+	<person>
+		<name>Sauron</name>
+	</person>
+	
+	<person>
+		<name>Saruman</name>
+	</person>
+	
 </roster>
