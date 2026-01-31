@@ -8,32 +8,28 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import java.util.List;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-/**
- * UI acceptance test (summary)
- *
- * What it verifies:
- * - Opens the web UI (default `http://localhost:5173`).
- * - Selects a roster name from the dropdown (or a radio button fallback).
- * - Submits the attendance form.
- * - Asserts that the success confirmation "Attendance Logged Successfully"
- * appears.
+import java.util.List;
+
+/*
+    * Unambiguous error feedback test for ATS-56
+
  */
-@DisplayName("Web UI tests")
-public class UIAcceptanceTest {
+
+@DisplayName("ATS-Error: Unambiguous error feedback tests")
+public class UnambiguousErrorFeedbackTest {
     private WebDriver driver;
 
     @BeforeEach
     public void setup() {
-        // Ensure chromedriver is available
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");
+        options.addArguments("--remote-allow-origins=*");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
@@ -47,20 +43,14 @@ public class UIAcceptanceTest {
     }
 
     @Test
-    @DisplayName("ATS-47 - submit attendance through UI")
-    public void testSubmitAttendance() throws Exception {
-        System.out.println("Running ATS-47 test: Attendance Tracking System (ATS)");
-
-        // Point test at local dev server (adjust if your environment uses a different
-        // port)
+    public void testSubmitWithoutSelectionShowsClearErrorAndIsStyled() throws Exception {
         String url = "http://localhost:5173";
         driver.get(url);
+        Thread.sleep(400);
 
-        // small pause to allow client to render
-        Thread.sleep(500);
-
-        // --- Login step: enter demo credentials and sign in if login form present ---
+        // --- Login step: enter demo credentials and sign in ---
         try {
+            // find the two inputs (name, password)
             List<WebElement> inputs = driver.findElements(By.tagName("input"));
             if (inputs.size() >= 2) {
                 WebElement nameInput = inputs.get(0);
@@ -68,6 +58,7 @@ public class UIAcceptanceTest {
                 nameInput.sendKeys("Ahmad Kassem");
                 passwordInput.sendKeys("IT488");
 
+                // click Login button (by text) if present
                 WebElement loginBtn = null;
                 try {
                     loginBtn = driver.findElement(By.xpath("//button[normalize-space()='Login']"));
@@ -83,9 +74,40 @@ public class UIAcceptanceTest {
                 }
             }
         } catch (Exception ignored) {
+            // continue; if login isn't present, the test will proceed (existing checks may
+            // fail)
         }
 
-        // Try to select from dropdown first, otherwise click a radio
+        // Ensure no selection is made, click the submit button
+        WebElement submit;
+        try {
+            submit = driver.findElement(By.cssSelector("button[type='submit']"));
+        } catch (NoSuchElementException e) {
+            submit = driver.findElement(By.tagName("button"));
+        }
+        submit.click();
+
+        Thread.sleep(300);
+
+        // Locate error message by exact text
+        String errText = "Please select your name.";
+        List<WebElement> matches = driver.findElements(By.id("error-message"));
+        Assertions.assertFalse(matches.isEmpty(), "Expected error message not found after empty submit");
+
+        WebElement err = matches.get(0);
+        Assertions.assertTrue(err.isDisplayed(), "Error message is present but not visible");
+
+        // Visual cue: check inline style contains color:crimson OR CSS color contains
+        // '220' (crimson rgb)
+        String styleAttr = err.getAttribute("style");
+        boolean inlineCrimson = styleAttr != null && styleAttr.toLowerCase().contains("color:crimson");
+        String colorCss = err.getCssValue("color");
+        boolean cssCrimson = colorCss != null && colorCss.contains("220") && colorCss.contains("20")
+                && colorCss.contains("60");
+        Assertions.assertTrue(inlineCrimson || cssCrimson,
+                "Error visual cue not styled as crimson (styleAttr='" + styleAttr + "', css='" + colorCss + "')");
+
+        // Interactivity: selecting a name should clear the message
         boolean selected = false;
         try {
             WebElement select = driver.findElement(By.tagName("select"));
@@ -100,32 +122,20 @@ public class UIAcceptanceTest {
                 }
             }
         } catch (NoSuchElementException e) {
-            // fallback to radio
+            // no dropdown
         }
 
         if (!selected) {
-            try {
-                WebElement radio = driver.findElement(By.cssSelector("input[type='radio']"));
-                radio.click();
-                selected = true;
-            } catch (NoSuchElementException ex) {
-                Assertions.fail("No selectable name found for ATS-47 test");
-            }
+            WebElement radio = driver.findElement(By.cssSelector("input[type='radio']"));
+            radio.click();
+            selected = true;
         }
 
-        // Click submit
-        WebElement submit;
-        try {
-            submit = driver.findElement(By.cssSelector("button[type='submit']"));
-        } catch (NoSuchElementException e) {
-            submit = driver.findElement(By.tagName("button"));
-        }
-        submit.click();
+        Thread.sleep(250);
 
-        Thread.sleep(500);
-
-        // Verify success message exists
-        String page = driver.getPageSource();
-        Assertions.assertTrue(page.contains("Attendance Logged Successfully"), "Success message not found - ATS-47");
+        // After selection, the error message should no longer be present or should be
+        // empty
+        List<WebElement> postMatches = driver.findElements(By.xpath("//p[normalize-space(text())='" + errText + "']"));
+        Assertions.assertTrue(postMatches.isEmpty(), "Error message still present after selecting a name");
     }
 }

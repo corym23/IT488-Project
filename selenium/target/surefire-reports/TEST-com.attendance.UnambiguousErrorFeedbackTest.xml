@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.attendance.UIAcceptanceTest" time="3.315" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.attendance.UnambiguousErrorFeedbackTest" time="3.496" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="webdriver.chrome.driver" value="/Users/corymccombs/.cache/selenium/chromedriver/mac64/144.0.7559.96/chromedriver"/>
@@ -59,12 +59,10 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testSubmitAttendance" classname="com.attendance.UIAcceptanceTest" time="3.313">
-    <system-out><![CDATA[Running ATS-47 test: Attendance Tracking System (ATS)
-]]></system-out>
-    <system-err><![CDATA[Jan 27, 2026 5:27:48 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+  <testcase name="testSubmitWithoutSelectionShowsClearErrorAndIsStyled" classname="com.attendance.UnambiguousErrorFeedbackTest" time="3.494">
+    <system-err><![CDATA[Jan 27, 2026 5:27:44 PM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
 WARNING: Unable to find CDP implementation matching 144
-Jan 27, 2026 5:27:48 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
+Jan 27, 2026 5:27:44 PM org.openqa.selenium.chromium.ChromiumDriver lambda$new$5
 WARNING: Unable to find version of CDP to use for 144.0.7559.97. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.11.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
 ]]></system-err>
   </testcase>
