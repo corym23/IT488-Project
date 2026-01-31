@@ -8,7 +8,6 @@ body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     font-size: 1rem; /* body text size */
     line-height: 1.5;
-    color: #222;
 }
 
 /* Headings (consistent across screens) */
@@ -64,4 +63,16 @@ body.keyboard-nav button:focus,
 body.keyboard-nav a:focus {
     outline: 3px solid #00c853;
     outline-offset: 2px;
+}
+.app-nav {
+    background-color: #2a909a;
+    color: #fff;
+    padding: 10px 10px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.app-nav-title {
+    margin: 0;
+    color: #fff;
 }

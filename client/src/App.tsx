@@ -8,11 +8,11 @@ function App() {
     const [searchText, setSearchText] = useState("");
 
     // Radio selection
-    const [radioName, setRadioName] = useState("");
+    const [selectedNames, setSelectedNames] = useState<string[]>([]);
+
 
     // Success screen state
     const [submitted, setSubmitted] = useState(false);
-    const [submittedName, setSubmittedName] = useState("");
     const [submittedTime, setSubmittedTime] = useState("");
 
     const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
@@ -106,13 +106,24 @@ function App() {
         }
     }, [shouldFocusSearch]);
 
-    function handleRadioChange(value: string) {
-        setRadioName(value);
+    function toggleName(name: string) {
+        setSelectedNames((prev) => {
+            if (prev.includes(name)) {
+                return prev.filter((n) => n !== name); // uncheck
+            }
+            return [...prev, name]; // check
+        });
     }
+
 
     const filteredNames = names.filter((name) =>
         name.toLowerCase().includes(searchText.toLowerCase())
     );
+
+    const total = names.length;
+    const count = selectedNames.length;
+    const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+
 
     const displayRosterTitle = rosterTitle && rosterTitle.trim() ? rosterTitle : "Roster";
 
@@ -121,44 +132,35 @@ function App() {
         setMessage("");
 
         // If user did nothing
-        if (!searchText.trim() && !radioName) {
+        if (!searchText.trim() && selectedNames.length === 0) {
             setMessage("Please type or select name");
             return;
         }
 
-        // Must select a valid radio option
-        let selectedName = radioName;
-
-        // Auto-select if exactly one match
-        if (!selectedName && filteredNames.length === 1) {
-            selectedName = filteredNames[0];
-        }
-
-        if (!selectedName) {
+        // If they typed but didn't select anything
+        if (selectedNames.length === 0) {
             setMessage("Name Not Found");
             return;
         }
 
-        const timestamp = new Date()
-            .toISOString()
-            .replace("T", " ")
-            .substring(0, 19);
+        const timestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
 
-        setSubmittedName(selectedName);
+        // Save submission
         setSubmittedTime(timestamp);
         setSubmitted(true);
     }
 
 
+
     function handleLogAnother() {
         setSubmitted(false);
-        setSubmittedName("");
         setSubmittedTime("");
         setSearchText("");
-        setRadioName("");
         setMessage("");
         setShouldFocusSearch(true);
+        setSelectedNames([]);
     }
+
 
     // Shared card style 
     const cardStyle: React.CSSProperties = {
@@ -187,7 +189,9 @@ function App() {
         backgroundColor: "#2a909a",
         padding: "10px 10px",
         boxSizing: "border-box",
+        color: "#f5f5f5",
     };
+
 
     return (
         <div style={{ width: "100%" }}>
@@ -196,7 +200,7 @@ function App() {
                 <h1
                     style={{
                         margin: 0,
-                        color: "#000",
+                        color: "#fff", // ✅ make it white
                         fontSize: "1.8rem",
                         fontWeight: 600,
                         textAlign: "left",
@@ -205,8 +209,6 @@ function App() {
                     Attendance Tracking Application
                 </h1>
             </nav>
-
-
 
             {/* PAGE CONTENT */}
             <div style={{ marginTop: 30, paddingBottom: 40 }}>
@@ -218,9 +220,8 @@ function App() {
                             fontWeight: 700,
                             fontSize: "2rem",
                             color: "#222",
-                            textAlign: "left",
+                            textAlign: "center",
                             position: "relative",
-                            left: -50,
                         }}
                     >
                         {displayRosterTitle}
@@ -232,7 +233,7 @@ function App() {
                             <h2
                                 style={{
                                     color: "#00c853",
-                                    marginBottom: 35,
+                                    marginBottom: 5,
                                     textAlign: "center",
                                     fontSize: "1.8rem",
                                 }}
@@ -240,6 +241,19 @@ function App() {
                                 Attendance Logged Successfully
                             </h2>
 
+                            {/* ✅ OUTSIDE the inner box, directly under the title */}
+                            <div style={{ textAlign: "center", marginBottom: 18, fontSize: "1.05rem" }}>
+                                <div style={{ marginBottom: 6 }}>
+                                    <strong>Percentage:</strong>{" "}
+                                    {selectedNames.length} / {names.length} ({percent}%)
+                                </div>
+
+                                <div>
+                                    <strong>Time Submitted:</strong> {submittedTime}
+                                </div>
+                            </div>
+
+                            {/* ✅ INNER BOX: only selected students */}
                             <div
                                 style={{
                                     border: "1px solid #ccc",
@@ -251,13 +265,15 @@ function App() {
                                 }}
                             >
                                 <div style={{ marginBottom: 10 }}>
-                                    <strong style={{ fontSize: "1.05rem" }}>Student Name:</strong>
-                                    <div>{submittedName}</div>
+                                    <strong style={{ fontSize: "1.05rem" }}>Selected Students:</strong>
                                 </div>
 
                                 <div>
-                                    <strong style={{ fontSize: "1.05rem" }}>Time Submitted:</strong>
-                                    <div>{submittedTime}</div>
+                                    {selectedNames.map((n) => (
+                                        <div key={n} style={{ marginBottom: 6 }}>
+                                            {n}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
@@ -278,6 +294,7 @@ function App() {
                                 </button>
                             </div>
                         </div>
+
                     ) : (
                         // INITIAL SUBMISSION SCREEN
                         <form onSubmit={handleSubmit} style={cardStyle}>
@@ -290,11 +307,10 @@ function App() {
                                 type="text"
                                 placeholder="Type name..."
                                 value={searchText}
-                                onChange={(e) => {
-                                    setSearchText(e.target.value);
-                                    setRadioName("");
-                                    setMessage("");
-                                }}
+                                    onChange={(e) => {
+                                        setSearchText(e.target.value);
+                                        setMessage("");
+                                    }}
                                 aria-invalid={!!message}
                                 aria-describedby={message ? "nameError" : undefined}
                                 style={{
@@ -352,11 +368,9 @@ function App() {
                                         <div key={name} style={{ marginBottom: 8 }}>
                                             <label>
                                                 <input
-                                                    type="radio"
-                                                    name="roster"
-                                                    checked={radioName === name}
-                                                    onChange={() => handleRadioChange(name)}
-                                                    style={{ marginRight: 8 }}
+                                                    type="checkbox"
+                                                    checked={selectedNames.includes(name)}
+                                                    onChange={() => toggleName(name)}
                                                 />
                                                 {name}
                                             </label>
