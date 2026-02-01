@@ -1,4 +1,5 @@
-﻿import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState, type FormEvent, type CSSProperties } from "react";
+
 
 function App() {
     // Roster names from XML
@@ -21,6 +22,8 @@ function App() {
     const [rosterTitle, setRosterTitle] = useState("");
     const [rosterStatus, setRosterStatus] = useState<"loading" | "ready" | "error">("loading");
 
+    // Class time from XML
+    const [classTime, setClassTime] = useState("");
 
 
     // Error message
@@ -76,6 +79,12 @@ function App() {
                 const loadedTitle = titleNode?.textContent?.trim() || "Roster";
                 setRosterTitle(loadedTitle);
 
+                // Class time
+                const timeNode = xmlDoc.getElementsByTagName("classTime")[0];
+                const loadedTime = timeNode?.textContent?.trim() || "";
+                setClassTime(loadedTime);
+
+
                 // Names
                 const nameElements = xmlDoc.getElementsByTagName("name");
                 const loadedNames: string[] = [];
@@ -127,7 +136,7 @@ function App() {
 
     const displayRosterTitle = rosterTitle && rosterTitle.trim() ? rosterTitle : "Roster";
 
-    function handleSubmit(event: React.FormEvent) {
+    function handleSubmit(event: FormEvent) {
         event.preventDefault();
         setMessage("");
 
@@ -163,7 +172,7 @@ function App() {
 
 
     // Shared card style 
-    const cardStyle: React.CSSProperties = {
+    const cardStyle: CSSProperties = {
         width: "100%",
         maxWidth: 500,
         margin: "0 auto",
@@ -176,7 +185,7 @@ function App() {
 
     const contentWrapStyle: React.CSSProperties = {
         width: "100%",
-        maxWidth: 500,      // match cardStyle.maxWidth
+        maxWidth: 500,    
         margin: "0 auto",
         boxSizing: "border-box",
     };
@@ -216,16 +225,45 @@ function App() {
                     {/* ROSTER TITLE (from XML) */}
                     <div
                         style={{
+                            display: "flex",
+                            justifyContent: "center", 
                             marginBottom: 16,
-                            fontWeight: 700,
-                            fontSize: "2rem",
-                            color: "#222",
-                            textAlign: "center",
-                            position: "relative",
+                            overflow: "visible",    
                         }}
                     >
-                        {displayRosterTitle}
+                        <div
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "baseline",
+                                gap: 14,
+                                whiteSpace: "nowrap",   
+                                maxWidth: "none",    
+                            }}
+                        >
+                            <div
+                                style={{
+                                    fontWeight: 700,
+                                    fontSize: "2rem",
+                                    color: "#222",
+                                }}
+                            >
+                                {displayRosterTitle}
+                            </div>
+
+                            {classTime && (
+                                <div
+                                    style={{
+                                        fontWeight: 600,
+                                        fontSize: "1.1rem",
+                                        color: "#555",
+                                    }}
+                                >
+                                    {classTime}
+                                </div>
+                            )}
+                        </div>
                     </div>
+
 
                     {/* SUCCESS CONFIRMATION SCREEN */}
                     {submitted ? (
@@ -241,43 +279,18 @@ function App() {
                                 Attendance Logged Successfully
                             </h2>
 
-                            {/* OUTSIDE the inner box, directly under the title */}
-                            <div style={{ textAlign: "center", marginBottom: 18, fontSize: "1.05rem" }}>
+                            {/* Percentage + time */}
+                            <div style={{ textAlign: "center", marginBottom: 12, fontSize: "1.05rem" }}>
                                 <div style={{ marginBottom: 6 }}>
                                     <strong>Percentage:</strong>{" "}
                                     {selectedNames.length} / {names.length} ({percent}%)
                                 </div>
 
-                                <div>
+                                <div style={{ marginBottom: 14 }}>
                                     <strong>Time Submitted:</strong> {submittedTime}
                                 </div>
-                            </div>
 
-                            {/*  INNER BOX: only selected students */}
-                            <div
-                                style={{
-                                    border: "1px solid #ccc",
-                                    borderRadius: 10,
-                                    padding: 22,
-                                    backgroundColor: "#f9f9f9",
-                                    textAlign: "center",
-                                    fontSize: "1.1rem",
-                                }}
-                            >
-                                <div style={{ marginBottom: 10 }}>
-                                    <strong style={{ fontSize: "1.05rem" }}>Selected Students:</strong>
-                                </div>
-
-                                <div>
-                                    {selectedNames.map((n) => (
-                                        <div key={n} style={{ marginBottom: 6 }}>
-                                            {n}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ textAlign: "center", marginTop: 20 }}>
+                                {/* Log another NOW lives here */}
                                 <button
                                     type="button"
                                     onClick={handleLogAnother}
@@ -293,8 +306,31 @@ function App() {
                                     Log another
                                 </button>
                             </div>
-                        </div>
 
+                            {/* Selected students box */}
+                            <div
+                                style={{
+                                    border: "1px solid #ccc",
+                                    borderRadius: 10,
+                                    padding: 22,
+                                    backgroundColor: "#f9f9f9",
+                                    textAlign: "center",
+                                    fontSize: "1.1rem",
+                                }}
+                            >
+                                <div style={{ marginBottom: 10 }}>
+                                    <strong style={{ fontSize: "1.05rem" }}>
+                                        Selected Students:
+                                    </strong>
+                                </div>
+
+                                {selectedNames.map((n) => (
+                                    <div key={n} style={{ marginBottom: 6 }}>
+                                        {n}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     ) : (
                         // INITIAL SUBMISSION SCREEN
                         <form onSubmit={handleSubmit} style={cardStyle}>
@@ -330,20 +366,87 @@ function App() {
                                 }}
                             />
 
-                            {filteredNames.length > 0 && (
-                                <p
-                                    style={{
-                                        margin: "12px 0",
-                                        color: "#666",
-                                        fontSize: "0.9rem",
-                                        fontWeight: 500,
-                                        textTransform: "uppercase",
-                                    }}
-                                >
-                                    OR Select The Name
-                                </p>
-                            )}
+                                {filteredNames.length > 0 && (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            margin: "12px 0",
+                                        }}
+                                    >
+                                        {/* LEFT: OR text */}
+                                        <p
+                                            style={{
+                                                margin: 0,
+                                                color: "#666",
+                                                fontSize: "0.9rem",
+                                                fontWeight: 500,
+                                                textTransform: "uppercase",
+                                            }}
+                                        >
+                                            OR Select The Name
+                                        </p>
 
+                                        {/* RIGHT: Roster actions */}
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 5,
+                                                fontSize: "0.7rem",
+                                            }}
+                                        >
+                                            {/* Upload */}
+                                            <label
+                                                style={{
+                                                    cursor: "pointer",
+                                                    color: "#2a909a",
+                                                    fontSize: "0.7rem",
+                                                }}
+                                            >
+                                                Upload
+                                                <input
+                                                    type="file"
+                                                    accept=".xml"
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+
+                                                        const reader = new FileReader();
+                                                        reader.onload = () => {
+                                                            console.log("Uploaded roster:", reader.result);
+                                                        };
+                                                        reader.readAsText(file);
+                                                    }}
+                                                />
+                                            </label>
+
+                                            {/* Separator */}
+                                            <span style={{ color: "#999" }}>|</span>
+
+                                            {/* Download */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    window.location.href = "/roster.xml";
+                                                }}
+                                                style={{
+                                                    background: "none",
+                                                    border: "none",
+                                                    padding: 0,
+                                                    color: "#2a909a",
+                                                    cursor: "pointer",
+                                                    fontSize: "0.7rem",
+                                                }}
+                                            >
+                                                Download
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                )}
                             <div
                                 role="radiogroup"
                                 aria-describedby={message ? "nameError" : undefined}
@@ -379,32 +482,22 @@ function App() {
                                 )}
                             </div>
 
-                            <div style={{ textAlign: "center", marginTop: 15 }}>
-                                <button
-                                    type="submit"
-                                    style={{
-                                        padding: "10px 14px",
-                                        borderRadius: 5,
-                                        border: "1px solid #222",
-                                        backgroundColor: "#f9f9f9",
-                                        cursor: "pointer",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Submit
-                                </button>
-                            </div>
-
-                            {message && (
-                                <p
-                                    id="nameError"
-                                    role="alert"
-                                    style={{ color: "crimson", textAlign: "center", marginTop: 12 }}
-                                >
-                                    {message}
-                                </p>
-                            )}
-                        </form>
+                                <div style={{ textAlign: "center", marginTop: 15 }}>
+                                    <button
+                                        type="submit"
+                                        style={{
+                                            padding: "10px 14px",
+                                            borderRadius: 5,
+                                            border: "1px solid #222",
+                                            backgroundColor: "#f9f9f9",
+                                            cursor: "pointer",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
+                                </form>
                     )}
                 </div>
             </div>
