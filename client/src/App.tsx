@@ -200,7 +200,7 @@ function App() {
                 <h1
                     style={{
                         margin: 0,
-                        color: "#fff", // ✅ make it white
+                        color: "#fff", 
                         fontSize: "1.8rem",
                         fontWeight: 600,
                         textAlign: "left",
@@ -241,7 +241,7 @@ function App() {
                                 Attendance Logged Successfully
                             </h2>
 
-                            {/* ✅ OUTSIDE the inner box, directly under the title */}
+                            {/* OUTSIDE the inner box, directly under the title */}
                             <div style={{ textAlign: "center", marginBottom: 18, fontSize: "1.05rem" }}>
                                 <div style={{ marginBottom: 6 }}>
                                     <strong>Percentage:</strong>{" "}
@@ -253,7 +253,7 @@ function App() {
                                 </div>
                             </div>
 
-                            {/* ✅ INNER BOX: only selected students */}
+                            {/*  INNER BOX: only selected students */}
                             <div
                                 style={{
                                     border: "1px solid #ccc",
