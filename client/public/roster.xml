@@ -2,96 +2,28 @@
 	<title>Professor Kassem's Class</title>
 	<classTime>10:00 AM</classTime>
 
-	<person>
-		<name>Adam Voss</name>
-	</person>
-	
-	<person>
-		<name>Cory Mccombs</name>
-	</person>
-	
-	<person>
-		<name>Jacqueline Vo</name>
-	</person>
-	
-	<person>
-		<name>Richard Sanchez</name>
-	</person>
-	
-	<person>
-		<name>Harry Potter</name>
-	</person>
-	
-	<person>
-		<name>Frodo Baggins</name>
-	</person>
-	
-	<person>
-		<name>Gandalf The Gray</name>
-	</person>
-	
-	<person>
-		<name>Ronald Weasely</name>
-	</person>
-	
-	<person>
-		<name>Albus Dumbledore</name>
-	</person>
-	
-	<person>
-		<name>Lord Voldemort</name>
-	</person>
-	
-	<person>
-		<name>Severus Snape</name>
-	</person>
-	
-	<person>
-		<name>Draco Malfoy</name>
-	</person>
-	
-	<person>
-		<name>Sirius Black</name>
-	</person>
-	
-	<person>
-		<name>Samwise Gamgee</name>
-	</person>
-	
-	<person>
-		<name>Bilbo Bagins</name>
-	</person>
-	
-	<person>
-		<name>Peregrin Took</name>
-	</person>
-	
-	<person>
-		<name>Gimli</name>
-	</person>
-	
-	<person>
-		<name>Arwen</name>
-	</person>
-	
-	<person>
-		<name>Aragorn II</name>
-	</person>
-	
-	<person>
-		<name>Legolas</name>
-	</person>
-	
-	<person>
-		<name>Gollum</name>
-	</person>
-	
-	<person>
-		<name>Sauron</name>
-	</person>
-	
-	<person>
-		<name>Saruman</name>
-	</person>
-	
+	<name>Adam Voss</name>
+	<name>Cory Mccombs</name>
+	<name>Jacqueline Vo</name>
+	<name>Richard Sanchez</name>
+	<name>Harry Potter</name>
+	<name>Frodo Baggins</name>
+	<name>Gandalf The Gray</name>
+	<name>Ronald Weasely</name>
+	<name>Albus Dumbledore</name>
+	<name>Lord Voldemort</name>
+	<name>Severus Snape</name>
+	<name>Draco Malfoy</name>
+	<name>Sirius Black</name>
+	<name>Samwise Gamgee</name>
+	<name>Bilbo Bagins</name>
+	<name>Peregrin Took</name>
+	<name>Gimli</name>
+	<name>Arwen</name>
+	<name>Aragorn II</name>
+	<name>Legolas</name>
+	<name>Gollum</name>
+	<name>Sauron</name>
+	<name>Saruman</name>
+	<name>Michael Jordan</name>
 </roster>
