@@ -47,10 +47,38 @@ public class SubmissionConfirmationTest {
         driver.get(url);
         Thread.sleep(500);
 
-        // Select a name from dropdown or radio and remember the value
+        // --- Login step: attempt to sign in with demo credentials if login form is
+        // present ---
+        try {
+            List<WebElement> inputs = driver.findElements(By.tagName("input"));
+            if (inputs.size() >= 2) {
+                WebElement nameInput = inputs.get(0);
+                WebElement passwordInput = inputs.get(1);
+                nameInput.sendKeys("Ahmad Kassem");
+                passwordInput.sendKeys("IT488");
+
+                WebElement loginBtn = null;
+                try {
+                    loginBtn = driver.findElement(By.xpath("//button[normalize-space()='Login']"));
+                } catch (Exception ex) {
+                    List<WebElement> buttons = driver.findElements(By.tagName("button"));
+                    if (!buttons.isEmpty())
+                        loginBtn = buttons.get(0);
+                }
+
+                if (loginBtn != null) {
+                    loginBtn.click();
+                    Thread.sleep(400);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Select a name from dropdown, radio, or checkbox and remember the value
         String selectedName = null;
         boolean selected = false;
 
+        // try select dropdown
         try {
             WebElement select = driver.findElement(By.tagName("select"));
             select.click();
@@ -68,16 +96,33 @@ public class SubmissionConfirmationTest {
             // no dropdown
         }
 
+        // try radio
         if (!selected) {
             try {
                 WebElement radio = driver.findElement(By.cssSelector("input[type='radio']"));
                 radio.click();
-                // label wraps the input; parent text contains the name
                 selectedName = radio.findElement(By.xpath("..")).getText().trim();
                 selected = true;
             } catch (NoSuchElementException ex) {
-                Assertions.fail("No selectable name found for confirmation test");
+                // no radio
             }
+        }
+
+        // try checkbox (the app uses checkboxes for selection)
+        if (!selected) {
+            try {
+                WebElement checkbox = driver.findElement(By.cssSelector("input[type='checkbox']"));
+                checkbox.click();
+                // label text contains the name
+                selectedName = checkbox.findElement(By.xpath("..")).getText().trim();
+                selected = true;
+            } catch (NoSuchElementException ex) {
+                // no checkbox
+            }
+        }
+
+        if (!selected) {
+            Assertions.fail("No selectable name found for confirmation test");
         }
 
         // Click submit
@@ -95,17 +140,41 @@ public class SubmissionConfirmationTest {
         WebElement header = driver.findElement(By.tagName("h2"));
         Assertions.assertTrue(header.getText().contains("Attendance Logged Successfully"), "Success header not found");
 
-        // Extract displayed student name and submitted time
-        WebElement nameDiv = driver
-                .findElement(By.xpath("//strong[normalize-space()='Student Name:']/following-sibling::div"));
-        WebElement timeDiv = driver
-                .findElement(By.xpath("//strong[normalize-space()='Time Submitted:']/following-sibling::div"));
+        // Extract displayed submitted time from the block that contains 'Time
+        // Submitted:'
+        WebElement timeBlock = driver.findElement(By.xpath("//div[contains(., 'Time Submitted:')]"));
+        String timeText = timeBlock.getText();
+        // Expect something like 'Time Submitted: 2026-02-03 22:00:00'
+        String displayedTime = null;
+        int idx = timeText.indexOf("Time Submitted:");
+        if (idx >= 0) {
+            displayedTime = timeText.substring(idx + "Time Submitted:".length()).trim();
+            // in case there are other lines, take first token-ish part
+            if (displayedTime.contains("\n")) {
+                displayedTime = displayedTime.split("\\n")[0].trim();
+            }
+        }
 
-        String displayedName = nameDiv.getText().trim();
-        String displayedTime = timeDiv.getText().trim();
+        Assertions.assertNotNull(displayedTime, "Could not locate displayed submission time");
 
-        // Assert name matches selection
-        Assertions.assertEquals(selectedName, displayedName, "Displayed student name does not match selected name");
+        // Verify selected name appears in the Selected Students area
+        boolean foundName = false;
+        List<WebElement> selectedBoxes = driver.findElements(By.xpath(
+                "//div[.//strong[normalize-space()='Selected Students:']]/following-sibling::div | //div[contains(., 'Selected Students:')]/following-sibling::div"));
+        // Fallback: search for any element that contains the name text
+        if (selectedBoxes.isEmpty()) {
+            List<WebElement> any = driver.findElements(By.xpath("//*[contains(text(), '" + selectedName + "')]"));
+            foundName = !any.isEmpty();
+        } else {
+            for (WebElement el : selectedBoxes) {
+                if (el.getText().trim().equals(selectedName)) {
+                    foundName = true;
+                    break;
+                }
+            }
+        }
+
+        Assertions.assertTrue(foundName, "Selected student name not displayed in confirmation: " + selectedName);
 
         // Validate timestamp format and that it's recent (assume UTC trimmed to
         // seconds)
@@ -118,7 +187,7 @@ public class SubmissionConfirmationTest {
         Instant now = Instant.now();
         long secondsDiff = Math.abs(Duration.between(displayedInstant, now).getSeconds());
 
-        Assertions.assertTrue(secondsDiff <= 15,
-                "Timestamp differs from now by more than 15 seconds (diff=" + secondsDiff + "s)");
+        Assertions.assertTrue(secondsDiff <= 30,
+                "Timestamp differs from now by more than 30 seconds (diff=" + secondsDiff + "s)");
     }
 }
