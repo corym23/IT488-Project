@@ -1,4 +1,5 @@
 ﻿import { useEffect, useRef, useState, type FormEvent, type CSSProperties } from "react";
+import Logon from "./Logon";
 
 
 function App() {
@@ -17,10 +18,11 @@ function App() {
     const [submittedTime, setSubmittedTime] = useState("");
 
     const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+    const [loggedIn, setLoggedIn] = useState(false);
 
     // Roster title from XML
     const [rosterTitle, setRosterTitle] = useState("");
-    const [rosterStatus, setRosterStatus] = useState<"loading" | "ready" | "error">("loading");
+    const [, setRosterStatus] = useState<"loading" | "ready" | "error">("loading");
 
     // Class time from XML
     const [classTime, setClassTime] = useState("");
@@ -201,6 +203,10 @@ function App() {
         color: "#f5f5f5",
     };
 
+
+    if (!loggedIn) {
+        return <Logon onLogin={() => setLoggedIn(true)} />;
+    }
 
     return (
         <div style={{ width: "100%" }}>
