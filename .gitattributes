@@ -1,1 +1,2 @@
 Electron[[:space:]]Framework/** filter=lfs diff=lfs merge=lfs -text
+IT488-Project2.0/release/mac/ATS[[:space:]]Desktop.app/** filter=lfs diff=lfs merge=lfs -text
