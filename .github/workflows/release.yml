@@ -26,13 +26,13 @@ jobs:
         run: npm ci
 
       - name: Build client
-        working-directory: ./client
+        working-directory: client
         run: |
           npm ci
           npm run build --if-present
 
       - name: Build electron (mac)
-        working-directory: ./electron
+        working-directory: electron
         run: |
           npm ci
           npx electron-builder --mac --publish never
@@ -65,13 +65,13 @@ jobs:
         run: npm ci
 
       - name: Build client
-        working-directory: ./client
+        working-directory: client
         run: |
           npm ci
           npm run build --if-present
 
       - name: Build electron (windows)
-        working-directory: ./electron
+        working-directory: electron
         run: |
           npm ci
           npx electron-builder --win --x64 --publish never
