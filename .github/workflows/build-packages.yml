@@ -1,0 +1,44 @@
+name: Build Windows EXE (NSIS)
+    runs-on: windows-latest
+    needs: create_release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install NSIS
+        run: choco install nsis -y
+
+      - name: Prepare package folder
+        run: |
+          md release\pkg || exit 0
+          xcopy /E /I /Y IT488-Project2.0 release\pkg\IT488-Project2.0
+
+      - name: Create NSIS script
+        run: |
+          $script = @'
+          !define PRODUCT_NAME "IT488 Project 2.0"
+          !define PRODUCT_VER "${{ github.event.inputs.tag || github.ref_name }}"
+          OutFile "IT488-Project2.0-Setup-${{ github.event.inputs.tag || github.ref_name }}.exe"
+          InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
+          Page directory
+          Section "Install"
+            SetOutPath "$INSTDIR"
+            File /r "${{ github.workspace }}\\release\\pkg\\IT488-Project2.0\\*.*"
+            CreateShortCut "$DESKTOP\\${PRODUCT_NAME}.lnk" "$INSTDIR\\README.md"
+          SectionEnd
+'@
+          $script | Out-File -FilePath installer.nsi -Encoding ascii
+
+      - name: Compile NSIS installer
+        run: |
+          "C:\Program Files (x86)\NSIS\makensis.exe" /V2 installer.nsi
+
+      - name: Upload EXE to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./IT488-Project2.0-Setup-${{ github.event.inputs.tag || github.ref_name }}.exe
+          asset_name: IT488-Project2.0-Setup-${{ github.event.inputs.tag || github.ref_name }}.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
