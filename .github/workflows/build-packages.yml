@@ -1,0 +1,150 @@
+name: Build & Package (macOS and Windows)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    name: Build macOS installer
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build client
+        working-directory: ./client
+        run: |
+          npm ci
+          npm run build --if-present
+
+      - name: Build electron (mac)
+        working-directory: ./electron
+        run: |
+          npm ci
+          npx electron-builder --mac --publish never
+
+      - name: List produced files
+        run: |
+          ls -la dist || true
+          ls -la release || true
+
+      - name: Upload mac installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-installers
+          path: |
+            dist/*.dmg
+            release/*.dmg
+
+  build-win:
+    name: Build Windows installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build client
+        working-directory: ./client
+        run: |
+          npm ci
+          npm run build --if-present
+
+      - name: Build electron (windows)
+        working-directory: ./electron
+        shell: bash
+        run: |
+          npm ci
+          npx electron-builder --win --x64 --publish never
+
+      - name: List produced files
+        run: |
+          dir || true
+          ls -la dist || true
+          ls -la release || true
+
+      - name: Upload windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-installers
+          path: |
+            dist/*.exe
+            release/*.exe
+
+  publish-release:
+    name: Create GitHub Release and attach artifacts
+    needs: [build-mac, build-win]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download mac artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-installers
+
+      - name: Download win artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: win-installers
+
+      - name: List downloaded files
+        run: |
+          echo "mac files:" && ls -la || true
+          echo "release files:" && ls -la release || true
+
+      - name: Determine tag name
+        id: tag
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+          else
+            TAG_NAME=unspecified-${GITHUB_SHA::7}
+          fi
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Release ${{ steps.tag.outputs.tag }}
+          body: Automated unsigned build artifacts from CI
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+        run: |
+          set -e
+          for f in mac-installers/* release/*.dmg release/*.blockmap; do
+            if [ -f "$f" ]; then
+              name=$(basename "$f")
+              echo "Uploading $name"
+              curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" --data-binary @"$f" "$UPLOAD_URL?name=$name"
+            fi
+          done
+          for f in win-installers/* release/*.exe; do
+            if [ -f "$f" ]; then
+              name=$(basename "$f")
+              echo "Uploading $name"
+              curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" --data-binary @"$f" "$UPLOAD_URL?name=$name"
+            fi
+          done
