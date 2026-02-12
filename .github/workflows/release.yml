@@ -112,11 +112,17 @@ jobs:
 
       - name: Determine tag name
         id: tag
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME=${GITHUB_REF#refs/tags/}
+          elif [[ -n "${INPUT_TAG}" ]]; then
+            TAG_NAME=${INPUT_TAG}
           else
-            TAG_NAME=${{ github.event.inputs.tag || "unspecified-${GITHUB_SHA::7}" }}
+            TAG_NAME="unspecified-${GITHUB_SHA:0:7}"
           fi
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
