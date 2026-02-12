@@ -1,48 +1,144 @@
-name: Build Windows EXE (NSIS)
+name: Build & Release installers (macOS + Windows)
 
 on:
+  push:
+    tags:
+      - 'v*'
+      - 'ATS-*'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to create release for (e.g. v1.0.0)'
+        description: 'Tag to create release for (e.g. v1.0.0 or ATS-v2.0.1)'
         required: false
 
 jobs:
-  build-windows-exe:
-    name: Build Windows EXE (NSIS)
+  build-mac:
+    name: Build macOS installer
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build client
+        working-directory: client
+        run: |
+          npm ci
+          npm run build --if-present
+
+      - name: Build electron (mac)
+        working-directory: electron
+        run: |
+          npm ci
+          npx electron-builder --mac --publish never
+
+      - name: Upload mac installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-installers
+          path: |
+            dist/*.dmg
+            release/*.dmg
+
+  build-win:
+    name: Build Windows installer (NSIS/electron)
     runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install NSIS
-        run: choco install nsis -y
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-      - name: Prepare package folder
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build client
+        working-directory: client
         run: |
-          md release\pkg || exit 0
-          xcopy /E /I /Y IT488-Project2.0 release\pkg\IT488-Project2.0
+          npm ci
+          npm run build --if-present
 
-      - name: Create NSIS script
-        shell: pwsh
+      - name: Build electron (windows)
+        working-directory: electron
         run: |
-          $script = @'
-          !define PRODUCT_NAME "IT488 Project 2.0"
-          !define PRODUCT_VER "${{ github.event.inputs.tag || github.ref_name }}"
-          OutFile "IT488-Project2.0-Setup-${{ github.event.inputs.tag || github.ref_name }}.exe"
-          InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
-          Page directory
-          Section "Install"
-            SetOutPath "$INSTDIR"
-            File /r "${{ github.workspace }}\\release\\pkg\\IT488-Project2.0\\*.*"
-            CreateShortCut "$DESKTOP\\${PRODUCT_NAME}.lnk" "$INSTDIR\\README.md"
-          SectionEnd
-'@
-          $script | Out-File -FilePath installer.nsi -Encoding ascii
+          npm ci
+          npx electron-builder --win --x64 --publish never
 
-      - name: Compile NSIS installer
+      - name: Upload windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-installers
+          path: |
+            dist/*.exe
+            release/*.exe
+
+  publish-release:
+    name: Create GitHub Release and attach artifacts
+    needs: [build-mac, build-win]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download mac artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-installers
+
+      - name: Download win artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: win-installers
+
+      - name: Determine tag name
+        id: tag
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
         run: |
-          "C:\Program Files (x86)\NSIS\makensis.exe" /V2 installer.nsi
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+          elif [[ -n "${INPUT_TAG}" ]]; then
+            TAG_NAME=${INPUT_TAG}
+          else
+            TAG_NAME="unspecified-${GITHUB_SHA:0:7}"
+          fi
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Upload EXE to release (manual step: upload from UI or use create-release job)
-        run: echo "Built installer: IT488-Project2.0-Setup-${{ github.event.inputs.tag || github.ref_name }}.exe"
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Release ${{ steps.tag.outputs.tag }}
+          body: Automated build artifacts from CI
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+        run: |
+          set -e
+          for f in mac-installers/* dist/*.dmg release/*.dmg; do
+            if [ -f "$f" ]; then
+              name=$(basename "$f")
+              echo "Uploading $name"
+              curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" --data-binary @"$f" "$UPLOAD_URL?name=$name"
+            fi
+          done
+          for f in win-installers/* dist/*.exe release/*.exe; do
+            if [ -f "$f" ]; then
+              name=$(basename "$f")
+              echo "Uploading $name"
+              curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" --data-binary @"$f" "$UPLOAD_URL?name=$name"
+            fi
+          done
