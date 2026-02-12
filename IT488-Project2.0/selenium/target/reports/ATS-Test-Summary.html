@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ATS Selenium Test Summary</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 40px; color: #222 }
+    header { border-bottom: 1px solid #ddd; margin-bottom: 20px }
+    h1 { margin: 0; font-size: 20px }
+    .meta { color: #666; font-size: 13px }
+    section { margin-top: 18px }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; padding: 8px; border: 1px solid #ddd }
+    th { background: #f6f6f6 }
+    .ok { color: #1a7f37; font-weight: bold }
+    .warn { color: #b36b00 }
+    footer { margin-top: 30px; color: #666; font-size: 12px }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ATS Selenium Test Summary</h1>
+    <div class="meta">Generated: 2026-02-10 — Environment: macOS (local run)</div>
+  </header>
+
+  <section>
+    <h2>Overview</h2>
+    <p>Scope: Full Selenium end-to-end suite for the Attendance app (all tests under <strong>selenium/src/test/java/com/attendance</strong>).</p>
+    <table>
+      <tr><th>Command</th><td><code>mvn test</code> (module: selenium)</td></tr>
+      <tr><th>Result</th><td class="ok">Tests run: 19 — Failures: 0 — Errors: 0 — Skipped: 0 — <strong>BUILD SUCCESS</strong></td></tr>
+      <tr><th>Duration</th><td>~2m 47s (reported by Maven)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Notable Warnings</h2>
+    <ul>
+      <li class="warn">Selenium CDP warnings observed: "Unable to find CDP implementation matching 144" — informational only; consider adding a matching <code>selenium-devtools-vNN</code> dependency to silence.</li>
+      <li class="warn">SLF4J: No provider found — tests default to NOP logger (informational).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Changes / Traceability</h2>
+    <p>For QA and audit purposes, the run included recent updates to the client and tests:</p>
+    <ul>
+      <li><strong>client/src/App.tsx</strong> — canonicalized empty-submit message to "please enter or select a name from the list."</li>
+      <li><strong>selenium/src/test/java/com/attendance/TestBase.java</strong> — new shared WebDriver factory supporting <code>chrome</code>, <code>edge</code>, and <code>safari</code> via <code>-Dbrowser=...</code>.</li>
+      <li>All test classes updated to extend <code>TestBase</code> for centralized setup/teardown.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How to Reproduce / Run</h2>
+    <p>Default (Chrome):</p>
+    <pre>mvn test</pre>
+    <p>Edge:</p>
+    <pre>mvn test -Dbrowser=edge</pre>
+    <p>Safari (macOS):</p>
+    <pre>mvn test -Dbrowser=safari</pre>
+  </section>
+
+  <section>
+    <h2>PDF Generation</h2>
+    <p>The HTML summary is saved at:</p>
+    <pre>selenium/target/reports/ATS-Test-Summary.html</pre>
+    <p>To convert to PDF locally using Google Chrome (macOS), run:</p>
+    <pre>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless --disable-gpu --print-to-pdf="selenium/target/reports/ATS-Test-Summary.pdf" "file:///Users/corymccombs/git/ATS20/IT488-Project/selenium/target/reports/ATS-Test-Summary.html"</pre>
+    <p>After running that command the PDF will be at:</p>
+    <pre>selenium/target/reports/ATS-Test-Summary.pdf</pre>
+  </section>
+
+  <footer>
+    Report generated from the local test run. If you want, I can run the Chrome headless command now to produce the PDF here.
+  </footer>
+</body>
+</html>

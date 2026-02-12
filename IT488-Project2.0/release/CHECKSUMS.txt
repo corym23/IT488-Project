@@ -1,0 +1,2 @@
+be3ed49e9ba89bc3b8409178a92b6de0dcce1f3a445ccb31a79b46ac21358baa  ATS Desktop-1.0.0.dmg
+2a590262b59ca8a0b0f787c759be95ca40af0a6900d365b9c68b28ca9b58cc00  ATS-Test-Summary.pdf

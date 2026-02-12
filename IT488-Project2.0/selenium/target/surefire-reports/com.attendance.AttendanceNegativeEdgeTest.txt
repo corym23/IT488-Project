@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.attendance.AttendanceNegativeEdgeTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 44.573 s - in com.attendance.AttendanceNegativeEdgeTest

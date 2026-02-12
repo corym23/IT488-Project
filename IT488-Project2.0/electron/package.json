@@ -1,0 +1,36 @@
+{
+  "name": "ats-electron",
+  "version": "1.0.0",
+  "description": "ATS Desktop wrapper (Electron)",
+  "main": "main.js",
+  "scripts": {
+    "build-client": "cd ../client && npm ci && npm run build",
+    "start": "npm run build-client && electron .",
+    "pack": "npm run build-client && electron-builder --dir",
+    "dist": "npm run build-client && electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^26.0.0",
+    "electron-builder": "^24.6.0"
+  },
+  "build": {
+    "appId": "com.attendance.ats",
+    "productName": "ATS Desktop",
+    "files": [
+      "../client/dist/**/*",
+      "main.js",
+      "preload.js",
+      "../server/web-api/**/*"
+    ],
+    "directories": {
+      "output": "../release",
+      "buildResources": "resources"
+    },
+    "mac": {
+      "target": ["dmg"]
+    },
+    "win": {
+      "target": ["nsis"]
+    }
+  }
+}
