@@ -1,0 +1,25 @@
+# ATS Desktop — Windows Installer Instructions
+
+These instructions explain how to install, run, and troubleshoot the ATS Desktop Windows installer produced by the build pipeline.
+
+## System Requirements
+- Windows 10 or later (x64)
+- At least 150 MB free disk space
+- Recommended: Administrator privileges for installation (not strictly required)
+
+## Download and Install
+1. Unzip the Windows installer.
+2. Open win-installers folder
+3. Open release folder
+4. Double click ATS Desktop-Setup-2.0.5.exe
+5. Follow the installer wizard to choose an installation folder (default is fine) and finish the installation.
+6. When complete, click finish with the Run ATS Desktop checked. The shortcut can also be seen in the Start Menu or use Desktop icon to launch the app.
+7. Login information: 
+    uid = Ahmad Kassem
+    password = IT488
+
+## Uninstall / Repair
+- Uninstall via Settings > Apps or via the uninstaller from the Start Menu > ATS Desktop > Uninstall.
+- To repair, run the installer again and choose the Repair/Modify option if presented.
+
+
